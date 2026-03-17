@@ -338,7 +338,7 @@ function renderAdvisor() {
         const needs=ti*0.5, wants=ti*0.3, savTarget=ti*0.2;
         const np=Math.min(100,(tb/needs*100)).toFixed(0), sp=Math.min(100,(totalSav/savTarget*100)).toFixed(0);
         brEl.innerHTML = `
-            <div class="rule-bar"><div class="rule-bar-header"><span>🏠 Needs (50%)</span><span>$${tb.toFixed(2)} / $${needs.toFixed(2)}</span></div><div class="rule-bar-sub">Housing, utilities, groceries, transport</div><div class="spending-bar-track"><div class="spending-bar-fill" style="width:${np}%;background:${tb>needs?'#ef4444':'#667eea'}"></div></div></div>
+            <div class="rule-bar"><div class="rule-bar-header"><span>🏠 Needs (50%)</span><span>$${tb.toFixed(2)} / $${needs.toFixed(2)}</span></div><div class="rule-bar-sub">Housing, utilities, groceries, transport</div><div class="spending-bar-track"><div class="spending-bar-fill" style="width:${np}%;background:${tb>needs?'#ef4444':'#0d9488'}"></div></div></div>
             <div class="rule-bar"><div class="rule-bar-header"><span>🎬 Wants (30%)</span><span>Target: $${wants.toFixed(2)}</span></div><div class="rule-bar-sub">Entertainment, dining, hobbies</div><div class="spending-bar-track"><div class="spending-bar-fill" style="width:30%;background:#f59e0b"></div></div></div>
             <div class="rule-bar"><div class="rule-bar-header"><span>💰 Savings (20%)</span><span>$${totalSav.toFixed(2)} / $${savTarget.toFixed(2)}</span></div><div class="rule-bar-sub">Emergency fund, retirement, goals</div><div class="spending-bar-track"><div class="spending-bar-fill" style="width:${sp}%;background:#10b981"></div></div></div>`;
     }
@@ -383,7 +383,7 @@ function renderGoalsProgress() {
 // ===== SPENDING ANALYSIS =====
 const periodMultipliers = { weekly: 1/4.33, monthly: 1, quarterly: 3, yearly: 12 };
 const periodLabels = { weekly:'Weekly', monthly:'Monthly', quarterly:'Quarterly', yearly:'Yearly' };
-const catColors = ['#667eea','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#06b6d4','#84cc16','#f97316','#6366f1'];
+const catColors = ['#0d9488','#10b981','#f59e0b','#ef4444','#6366f1','#ec4899','#06b6d4','#84cc16','#f97316','#8b5cf6'];
 
 function switchPeriod(period, btn) {
     currentPeriod = period;
@@ -408,7 +408,7 @@ function renderSpendingAnalysis() {
     document.getElementById('spendingSummaryRow').innerHTML = [
         {label:'Total Income',value:ti,color:'#10b981'},
         {label:'Total Expenses',value:tb,color:'#ef4444'},
-        {label:'Total Savings',value:totalSav,color:'#667eea'},
+        {label:'Total Savings',value:totalSav,color:'#0d9488'},
         {label:'Remaining',value:remaining,color:remaining>=0?'#10b981':'#ef4444'},
     ].map(s=>`<div class="summary-stat-card"><div class="stat-label">${periodLabels[currentPeriod]} ${s.label}</div><div class="stat-value" style="color:${s.color}">$${s.value.toFixed(2)}</div></div>`).join('');
 
@@ -429,7 +429,7 @@ function renderSpendingAnalysis() {
     document.getElementById('incomeExpenseChart').innerHTML = [
         {label:'Income',value:ti,color:'#10b981'},
         {label:'Expenses',value:tb,color:'#ef4444'},
-        {label:'Savings',value:totalSav,color:'#667eea'},
+        {label:'Savings',value:totalSav,color:'#0d9488'},
         {label:'Remaining',value:Math.max(0,remaining),color:'#f59e0b'},
     ].map(b=>`<div class="iev-bar"><div class="iev-label"><span>${b.label}</span><span>$${b.value.toFixed(2)}</span></div><div class="iev-track"><div class="iev-fill" style="width:${((b.value/maxBar)*100).toFixed(1)}%;background:${b.color}">${((b.value/maxBar)*100).toFixed(0)}%</div></div></div>`).join('');
 
@@ -458,7 +458,7 @@ function renderSpendingAnalysis() {
         return `<div class="comparison-col"><h4>${periodLabels[p]}</h4>
             <div class="comparison-item"><div class="comparison-item-label">Income</div><div class="comparison-item-value" style="color:#10b981">$${inc.toFixed(2)}</div></div>
             <div class="comparison-item"><div class="comparison-item-label">Expenses</div><div class="comparison-item-value" style="color:#ef4444">$${exp.toFixed(2)}</div></div>
-            <div class="comparison-item"><div class="comparison-item-label">Savings</div><div class="comparison-item-value" style="color:#667eea">$${sav.toFixed(2)}</div></div>
+            <div class="comparison-item"><div class="comparison-item-label">Savings</div><div class="comparison-item-value" style="color:#0d9488">$${sav.toFixed(2)}</div></div>
             <div class="comparison-item"><div class="comparison-item-label">Remaining</div><div class="comparison-item-value" style="color:${rem>=0?'#10b981':'#ef4444'}">$${rem.toFixed(2)}</div></div>
         </div>`;
     }).join('');
@@ -468,5 +468,9 @@ function renderSpendingAnalysis() {
 loadData();
 loadTheme();
 checkAuth();
+
+
+
+
 
 
