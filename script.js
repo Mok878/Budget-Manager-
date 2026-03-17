@@ -337,7 +337,9 @@ function deleteSavings(index) {
 
 function renderAll() {
     renderAdvisor();
-    renderSpendingAnalysis();    const multiplier = getMultiplier();
+    renderSpendingAnalysis();
+
+    const multiplier = getMultiplier();
     const totalIncome = income.reduce((sum, item) => sum + item.amount, 0) * multiplier;
     const totalBills = bills.reduce((sum, item) => sum + item.amount, 0) * multiplier;
     const totalEmergencySavings = emergencySavings.reduce((sum, item) => sum + item.amount, 0) * multiplier;
@@ -868,4 +870,5 @@ function renderSpendingAnalysis() {
             </div>`;
     }).join('');
 }
+
 
