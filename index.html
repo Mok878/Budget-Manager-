@@ -13,6 +13,7 @@
             <ul class="nav-menu">
                 <li class="active"><a href="#home" onclick="showSection('home')">Home</a></li>
                 <li><a href="#budget" onclick="showSection('budget')">My Budget</a></li>
+                <li><a href="#advisor" onclick="showSection('advisor')">Savings Advisor</a></li>
                 <li><a href="#pricing" onclick="showSection('pricing')">Pricing</a></li>
                 <li><a href="#about" onclick="showSection('about')">About</a></li>
                 <li><a href="#contact" onclick="showSection('contact')">Contact</a></li>
@@ -197,6 +198,76 @@
                 <ul id="savingsList" class="item-list"></ul>
             </section>
         </div>
+        </section>
+
+        <section id="advisor" class="page-section">
+            <div class="advisor-container">
+                <header>
+                    <h1>💡 Savings Advisor</h1>
+                    <p>Personalized insights to help you save smarter</p>
+                </header>
+
+                <div class="health-score-card">
+                    <div class="score-circle" id="scoreCircle">
+                        <span id="healthScore">--</span>
+                        <small>Budget Score</small>
+                    </div>
+                    <div class="score-info">
+                        <h2 id="scoreLabel">Add your budget data to get started</h2>
+                        <p id="scoreDescription">Enter your income, expenses, and savings in My Budget to receive your personalized financial health score and tips.</p>
+                    </div>
+                </div>
+
+                <div class="advisor-grid">
+                    <div class="advisor-card">
+                        <h3>📊 Spending Breakdown</h3>
+                        <div id="spendingBreakdown">
+                            <p class="empty-state">No data yet. Add expenses in My Budget.</p>
+                        </div>
+                    </div>
+
+                    <div class="advisor-card">
+                        <h3>🎯 Savings Rate</h3>
+                        <div id="savingsRate">
+                            <p class="empty-state">No data yet. Add income and savings in My Budget.</p>
+                        </div>
+                    </div>
+
+                    <div class="advisor-card">
+                        <h3>⚠️ Budget Alerts</h3>
+                        <div id="budgetAlerts">
+                            <p class="empty-state">No alerts. Add your budget data to get alerts.</p>
+                        </div>
+                    </div>
+
+                    <div class="advisor-card">
+                        <h3>💰 50/30/20 Rule</h3>
+                        <div id="budgetRule">
+                            <p class="empty-state">No data yet. The 50/30/20 rule helps split income into needs, wants, and savings.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tips-section">
+                    <h2>💡 Smart Saving Tips</h2>
+                    <div id="savingsTips" class="tips-grid"></div>
+                </div>
+
+                <div class="goals-tracker">
+                    <h2>🏆 Savings Goal Tracker</h2>
+                    <div id="goalsProgress"></div>
+                    <div class="goal-form">
+                        <h3>Add a Savings Goal</h3>
+                        <div class="input-group">
+                            <input type="text" id="goalName" placeholder="Goal name (e.g., New Car)">
+                            <input type="number" id="goalTarget" placeholder="Target amount ($)">
+                            <input type="number" id="goalCurrent" placeholder="Amount saved so far ($)">
+                            <button onclick="addGoalTracker()">Track Goal</button>
+                        </div>
+                        <ul id="goalsList" class="item-list"></ul>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section id="pricing" class="page-section">
