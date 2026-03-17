@@ -740,83 +740,83 @@ body.dark-mode .theme-toggle .moon-icon {
 }
 
 #home {
-    background: #eef2f7;
+    background: linear-gradient(160deg, #e0f0ff 0%, #f0e6ff 100%);
     min-height: calc(100vh - 120px);
     padding: 40px 20px;
 }
 
 body.dark-mode #home {
-    background: #111827;
+    background: linear-gradient(160deg, #0f1f3d 0%, #1a0f3d 100%);
 }
 
 #budget {
-    background: #ffffff;
+    background: linear-gradient(160deg, #e6fff4 0%, #e0f7ff 100%);
     min-height: calc(100vh - 120px);
     padding: 40px 20px;
 }
 
 body.dark-mode #budget {
-    background: #1e293b;
-}
-
-#pricing {
-    background: #eef2f7;
-    min-height: calc(100vh - 120px);
-    padding: 40px 20px;
-}
-
-body.dark-mode #pricing {
-    background: #111827;
-}
-
-#about {
-    background: #ffffff;
-    min-height: calc(100vh - 120px);
-    padding: 40px 20px;
-}
-
-body.dark-mode #about {
-    background: #1e293b;
-}
-
-#contact {
-    background: #eef2f7;
-    min-height: calc(100vh - 120px);
-    padding: 40px 20px;
-}
-
-body.dark-mode #contact {
-    background: #111827;
-}
-
-#login {
-    background: #ffffff;
-    min-height: calc(100vh - 120px);
-    padding: 40px 20px;
-}
-
-body.dark-mode #login {
-    background: #1e293b;
-}
-
-#register {
-    background: #eef2f7;
-    min-height: calc(100vh - 120px);
-    padding: 40px 20px;
-}
-
-body.dark-mode #register {
-    background: #111827;
+    background: linear-gradient(160deg, #0a2a1f 0%, #0a1f2a 100%);
 }
 
 #advisor {
-    background: #ffffff;
+    background: linear-gradient(160deg, #fff8e0 0%, #fff0e6 100%);
     min-height: calc(100vh - 120px);
     padding: 40px 20px;
 }
 
 body.dark-mode #advisor {
-    background: #1e293b;
+    background: linear-gradient(160deg, #2a1f00 0%, #2a1000 100%);
+}
+
+#pricing {
+    background: linear-gradient(160deg, #ffe6f0 0%, #fff0e6 100%);
+    min-height: calc(100vh - 120px);
+    padding: 40px 20px;
+}
+
+body.dark-mode #pricing {
+    background: linear-gradient(160deg, #2a0a1a 0%, #2a1500 100%);
+}
+
+#about {
+    background: linear-gradient(160deg, #e8f5e9 0%, #e0f7fa 100%);
+    min-height: calc(100vh - 120px);
+    padding: 40px 20px;
+}
+
+body.dark-mode #about {
+    background: linear-gradient(160deg, #0a2a0f 0%, #002a2a 100%);
+}
+
+#contact {
+    background: linear-gradient(160deg, #fce4ec 0%, #e8eaf6 100%);
+    min-height: calc(100vh - 120px);
+    padding: 40px 20px;
+}
+
+body.dark-mode #contact {
+    background: linear-gradient(160deg, #2a0a14 0%, #0f0a2a 100%);
+}
+
+#login {
+    background: linear-gradient(160deg, #e3f2fd 0%, #e8f5e9 100%);
+    min-height: calc(100vh - 120px);
+    padding: 40px 20px;
+}
+
+body.dark-mode #login {
+    background: linear-gradient(160deg, #0a1a2a 0%, #0a2a0f 100%);
+}
+
+#register {
+    background: linear-gradient(160deg, #fff3e0 0%, #fce4ec 100%);
+    min-height: calc(100vh - 120px);
+    padding: 40px 20px;
+}
+
+body.dark-mode #register {
+    background: linear-gradient(160deg, #2a1500 0%, #2a0a14 100%);
 }
 
 .container {
