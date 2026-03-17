@@ -14,6 +14,7 @@
                 <li class="active"><a href="#home" onclick="showSection('home')">Home</a></li>
                 <li><a href="#budget" onclick="showSection('budget')">My Budget</a></li>
                 <li><a href="#advisor" onclick="showSection('advisor')">Savings Advisor</a></li>
+                <li><a href="#spending" onclick="showSection('spending')">Spending Analysis</a></li>
                 <li><a href="#pricing" onclick="showSection('pricing')">Pricing</a></li>
                 <li><a href="#about" onclick="showSection('about')">About</a></li>
                 <li><a href="#contact" onclick="showSection('contact')">Contact</a></li>
@@ -266,6 +267,46 @@
                         </div>
                         <ul id="goalsList" class="item-list"></ul>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="spending" class="page-section">
+            <div class="spending-container">
+                <header>
+                    <h1>📈 Spending Analysis</h1>
+                    <p>See where your money goes across every time period</p>
+                </header>
+
+                <div class="period-tabs">
+                    <button class="period-tab active" onclick="switchPeriod('weekly', this)">Weekly</button>
+                    <button class="period-tab" onclick="switchPeriod('monthly', this)">Monthly</button>
+                    <button class="period-tab" onclick="switchPeriod('quarterly', this)">Quarterly</button>
+                    <button class="period-tab" onclick="switchPeriod('yearly', this)">Yearly</button>
+                </div>
+
+                <div class="spending-summary-row" id="spendingSummaryRow"></div>
+
+                <div class="spending-grid">
+                    <div class="spending-analysis-card wide">
+                        <h3>💸 Spending by Category</h3>
+                        <div id="categoryChart"></div>
+                    </div>
+
+                    <div class="spending-analysis-card">
+                        <h3>📊 Income vs Expenses vs Savings</h3>
+                        <div id="incomeExpenseChart"></div>
+                    </div>
+
+                    <div class="spending-analysis-card">
+                        <h3>🔍 Detailed Breakdown</h3>
+                        <div id="detailedBreakdown"></div>
+                    </div>
+                </div>
+
+                <div class="spending-analysis-card" style="margin-top:20px;">
+                    <h3>📅 Period Comparison</h3>
+                    <div class="comparison-grid" id="periodComparison"></div>
                 </div>
             </div>
         </section>
@@ -531,3 +572,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
