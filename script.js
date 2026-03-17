@@ -35,6 +35,8 @@ function showSection(sectionId) {
         section.classList.remove('active');
     });
     document.getElementById(sectionId).classList.add('active');
+    if (sectionId === 'spending') renderSpendingAnalysis();
+    if (sectionId === 'advisor') renderAdvisor();
     
     // Update active menu item
     document.querySelectorAll('.nav-menu li').forEach(item => {
@@ -334,7 +336,8 @@ function deleteSavings(index) {
 }
 
 function renderAll() {
-    renderAdvisor();    const multiplier = getMultiplier();
+    renderAdvisor();
+    renderSpendingAnalysis();    const multiplier = getMultiplier();
     const totalIncome = income.reduce((sum, item) => sum + item.amount, 0) * multiplier;
     const totalBills = bills.reduce((sum, item) => sum + item.amount, 0) * multiplier;
     const totalEmergencySavings = emergencySavings.reduce((sum, item) => sum + item.amount, 0) * multiplier;
@@ -724,3 +727,145 @@ function renderGoalsProgress() {
             </div>`;
     }).join('');
 }
+
+// ===== SPENDING ANALYSIS =====
+let currentPeriod = 'monthly';
+
+const periodMultipliers = {
+    weekly:    1 / 4.33,
+    monthly:   1,
+    quarterly: 3,
+    yearly:    12
+};
+
+const periodLabels = {
+    weekly: 'Weekly', monthly: 'Monthly', quarterly: 'Quarterly', yearly: 'Yearly'
+};
+
+const catColors = [
+    '#667eea','#10b981','#f59e0b','#ef4444','#8b5cf6',
+    '#ec4899','#06b6d4','#84cc16','#f97316','#6366f1'
+];
+
+function switchPeriod(period, btn) {
+    currentPeriod = period;
+    document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    renderSpendingAnalysis();
+}
+
+function renderSpendingAnalysis() {
+    const m = periodMultipliers[currentPeriod];
+    const totalIncome   = income.reduce((s, i) => s + i.amount, 0) * m;
+    const totalBills    = bills.reduce((s, i) => s + i.amount, 0) * m;
+    const totalEmerg    = emergencySavings.reduce((s, i) => s + i.amount, 0) * m;
+    const totalSav      = savings.reduce((s, i) => s + i.amount, 0) * m;
+    const total401k     = retirement401k.reduce((s, i) => s + i.amount, 0) * m;
+    const totalRoth     = rothIRA.reduce((s, i) => s + i.amount, 0) * m;
+    const totalAllSav   = totalEmerg + totalSav + total401k + totalRoth;
+    const remaining     = totalIncome - totalBills - totalAllSav;
+
+    // Summary cards
+    document.getElementById('spendingSummaryRow').innerHTML = [
+        { label: 'Total Income',   value: totalIncome,   color: '#10b981' },
+        { label: 'Total Expenses', value: totalBills,    color: '#ef4444' },
+        { label: 'Total Savings',  value: totalAllSav,   color: '#667eea' },
+        { label: 'Remaining',      value: remaining,     color: remaining >= 0 ? '#10b981' : '#ef4444' },
+    ].map(s => `
+        <div class="summary-stat-card">
+            <div class="stat-label">${periodLabels[currentPeriod]} ${s.label}</div>
+            <div class="stat-value" style="color:${s.color}">$${s.value.toFixed(2)}</div>
+        </div>`).join('');
+
+    // Category chart
+    const byCategory = bills.reduce((acc, b) => {
+        acc[b.category] = (acc[b.category] || 0) + b.amount * m;
+        return acc;
+    }, {});
+    const sorted = Object.entries(byCategory).sort((a, b) => b[1] - a[1]);
+    const maxAmt = sorted.length ? sorted[0][1] : 1;
+
+    document.getElementById('categoryChart').innerHTML = sorted.length === 0
+        ? '<p class="empty-state">No expenses added yet.</p>'
+        : sorted.map(([cat, amt], i) => {
+            const pct = ((amt / maxAmt) * 100).toFixed(1);
+            const ofIncome = totalIncome > 0 ? ((amt / totalIncome) * 100).toFixed(1) : 0;
+            return `
+                <div class="cat-bar-row">
+                    <div class="cat-bar-name">${cat}</div>
+                    <div class="cat-bar-track">
+                        <div class="cat-bar-fill" style="width:${pct}%;background:${catColors[i % catColors.length]}">
+                            ${pct > 15 ? ofIncome + '% of income' : ''}
+                        </div>
+                    </div>
+                    <div class="cat-bar-amount">$${amt.toFixed(2)}</div>
+                </div>`;
+        }).join('');
+
+    // Income vs Expenses vs Savings
+    const maxBar = Math.max(totalIncome, totalBills, totalAllSav, 1);
+    document.getElementById('incomeExpenseChart').innerHTML = [
+        { label: 'Income',   value: totalIncome,  color: '#10b981' },
+        { label: 'Expenses', value: totalBills,   color: '#ef4444' },
+        { label: 'Savings',  value: totalAllSav,  color: '#667eea' },
+        { label: 'Remaining',value: Math.max(0, remaining), color: '#f59e0b' },
+    ].map(b => `
+        <div class="iev-bar">
+            <div class="iev-label"><span>${b.label}</span><span>$${b.value.toFixed(2)}</span></div>
+            <div class="iev-track">
+                <div class="iev-fill" style="width:${((b.value/maxBar)*100).toFixed(1)}%;background:${b.color}">
+                    ${((b.value/maxBar)*100).toFixed(0)}%
+                </div>
+            </div>
+        </div>`).join('');
+
+    // Detailed breakdown
+    const savingsRate = totalIncome > 0 ? ((totalAllSav / totalIncome) * 100).toFixed(1) : 0;
+    const expenseRate = totalIncome > 0 ? ((totalBills / totalIncome) * 100).toFixed(1) : 0;
+    document.getElementById('detailedBreakdown').innerHTML = [
+        { label: 'Income',            value: `$${totalIncome.toFixed(2)}` },
+        { label: 'Fixed Expenses',    value: `$${totalBills.toFixed(2)}` },
+        { label: 'Emergency Savings', value: `$${totalEmerg.toFixed(2)}` },
+        { label: '401(k)',            value: `$${total401k.toFixed(2)}` },
+        { label: 'Roth IRA',          value: `$${totalRoth.toFixed(2)}` },
+        { label: 'Regular Savings',   value: `$${totalSav.toFixed(2)}` },
+        { label: 'Savings Rate',      value: `${savingsRate}%` },
+        { label: 'Expense Rate',      value: `${expenseRate}%` },
+        { label: 'Net Remaining',     value: `$${remaining.toFixed(2)}` },
+    ].map(r => `
+        <div class="breakdown-row">
+            <span class="breakdown-label">${r.label}</span>
+            <span class="breakdown-value">${r.value}</span>
+        </div>`).join('');
+
+    // Period comparison
+    const periods = ['weekly', 'monthly', 'quarterly', 'yearly'];
+    document.getElementById('periodComparison').innerHTML = periods.map(p => {
+        const pm = periodMultipliers[p];
+        const inc = income.reduce((s, i) => s + i.amount, 0) * pm;
+        const exp = bills.reduce((s, i) => s + i.amount, 0) * pm;
+        const sav = (emergencySavings.concat(savings, retirement401k, rothIRA)).reduce((s, i) => s + i.amount, 0) * pm;
+        const rem = inc - exp - sav;
+        return `
+            <div class="comparison-col">
+                <h4>${periodLabels[p]}</h4>
+                <div class="comparison-item">
+                    <div class="comparison-item-label">Income</div>
+                    <div class="comparison-item-value" style="color:#10b981">$${inc.toFixed(2)}</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-item-label">Expenses</div>
+                    <div class="comparison-item-value" style="color:#ef4444">$${exp.toFixed(2)}</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-item-label">Savings</div>
+                    <div class="comparison-item-value" style="color:#667eea">$${sav.toFixed(2)}</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-item-label">Remaining</div>
+                    <div class="comparison-item-value" style="color:${rem>=0?'#10b981':'#ef4444'}">$${rem.toFixed(2)}</div>
+                </div>
+            </div>`;
+    }).join('');
+}
+
