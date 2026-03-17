@@ -334,7 +334,7 @@ function deleteSavings(index) {
 }
 
 function renderAll() {
-    const multiplier = getMultiplier();
+    renderAdvisor();    const multiplier = getMultiplier();
     const totalIncome = income.reduce((sum, item) => sum + item.amount, 0) * multiplier;
     const totalBills = bills.reduce((sum, item) => sum + item.amount, 0) * multiplier;
     const totalEmergencySavings = emergencySavings.reduce((sum, item) => sum + item.amount, 0) * multiplier;
@@ -532,3 +532,195 @@ function renderAll() {
 loadData();
 loadTheme();
 checkAuth();
+renderAdvisor();
+
+// ===== SAVINGS ADVISOR =====
+let goalTrackers = JSON.parse(localStorage.getItem('goalTrackers') || '[]');
+
+function renderAdvisor() {
+    const totalIncome = income.reduce((s, i) => s + i.amount, 0);
+    const totalBills = bills.reduce((s, i) => s + i.amount, 0);
+    const totalEmergency = emergencySavings.reduce((s, i) => s + i.amount, 0);
+    const totalSavings = savings.reduce((s, i) => s + i.amount, 0);
+    const total401kAmt = retirement401k.reduce((s, i) => s + i.amount, 0);
+    const totalRothAmt = rothIRA.reduce((s, i) => s + i.amount, 0);
+    const totalAllSavings = totalEmergency + totalSavings + total401kAmt + totalRothAmt;
+    const savingsRate = totalIncome > 0 ? (totalAllSavings / totalIncome) * 100 : 0;
+    const expenseRate = totalIncome > 0 ? (totalBills / totalIncome) * 100 : 0;
+
+    renderHealthScore(totalIncome, totalBills, totalAllSavings, savingsRate);
+    renderSpendingBreakdown(totalBills);
+    renderSavingsRate(savingsRate, totalIncome, totalAllSavings);
+    renderAlerts(totalIncome, totalBills, totalAllSavings, savingsRate, totalEmergency);
+    renderBudgetRule(totalIncome, totalBills, totalAllSavings);
+    renderTips(savingsRate, expenseRate, totalEmergency, totalIncome);
+    renderGoalsProgress();
+}
+
+function renderHealthScore(income, bills, savings, savingsRate) {
+    if (income === 0) return;
+    const expenseRatio = bills / income;
+    let score = 100;
+    if (expenseRatio > 0.9) score -= 40;
+    else if (expenseRatio > 0.7) score -= 25;
+    else if (expenseRatio > 0.5) score -= 10;
+    if (savingsRate < 5) score -= 20;
+    else if (savingsRate < 10) score -= 10;
+    else if (savingsRate >= 20) score += 10;
+    score = Math.max(10, Math.min(100, Math.round(score)));
+
+    let label, desc, cls;
+    if (score >= 80) { label = 'Excellent!'; cls = 'great'; desc = 'You are in great financial shape. Keep it up and consider increasing your investments.'; }
+    else if (score >= 60) { label = 'Good'; cls = 'good'; desc = 'Your finances are on track. Look for small ways to reduce expenses and boost savings.'; }
+    else if (score >= 40) { label = 'Fair'; cls = 'fair'; desc = 'There is room for improvement. Try to cut unnecessary expenses and increase your savings rate.'; }
+    else { label = 'Needs Work'; cls = 'poor'; desc = 'Your expenses are high relative to income. Focus on reducing bills and building an emergency fund first.'; }
+
+    document.getElementById('healthScore').textContent = score;
+    document.getElementById('scoreLabel').textContent = `Financial Health: ${label}`;
+    document.getElementById('scoreDescription').textContent = desc;
+    const circle = document.getElementById('scoreCircle');
+    circle.className = `score-circle ${cls}`;
+}
+
+function renderSpendingBreakdown(totalBills) {
+    const el = document.getElementById('spendingBreakdown');
+    if (bills.length === 0) { el.innerHTML = '<p class="empty-state">No expenses added yet.</p>'; return; }
+    const byCategory = bills.reduce((acc, b) => {
+        acc[b.category] = (acc[b.category] || 0) + b.amount;
+        return acc;
+    }, {});
+    const sorted = Object.entries(byCategory).sort((a, b) => b[1] - a[1]);
+    el.innerHTML = sorted.map(([cat, amt]) => {
+        const pct = totalBills > 0 ? ((amt / totalBills) * 100).toFixed(1) : 0;
+        return `
+            <div class="spending-bar">
+                <div class="spending-bar-label"><span>${cat}</span><span>$${amt.toFixed(2)} (${pct}%)</span></div>
+                <div class="spending-bar-track"><div class="spending-bar-fill" style="width:${pct}%"></div></div>
+            </div>`;
+    }).join('');
+}
+
+function renderSavingsRate(rate, income, totalSavings) {
+    const el = document.getElementById('savingsRate');
+    if (income === 0) { el.innerHTML = '<p class="empty-state">Add income to see your savings rate.</p>'; return; }
+    let recClass, recText;
+    if (rate < 10) { recClass = 'rate-low'; recText = '⚠️ Aim for at least 20% savings rate. Try cutting one expense category.'; }
+    else if (rate < 20) { recClass = 'rate-ok'; recText = '👍 Good start! Try to reach 20% for long-term financial security.'; }
+    else { recClass = 'rate-good'; recText = '🎉 Excellent savings rate! You are building strong financial security.'; }
+    el.innerHTML = `
+        <div class="savings-rate-display">
+            <div class="savings-rate-number">${rate.toFixed(1)}%</div>
+            <div class="savings-rate-label">of income saved monthly</div>
+            <div class="savings-rate-label" style="margin-top:8px;">$${totalSavings.toFixed(2)} / $${income.toFixed(2)}</div>
+        </div>
+        <div class="rate-recommendation ${recClass}">${recText}</div>`;
+}
+
+function renderAlerts(income, bills, savings, savingsRate, emergency) {
+    const el = document.getElementById('budgetAlerts');
+    if (income === 0) { el.innerHTML = '<p class="empty-state">Add budget data to see alerts.</p>'; return; }
+    const alerts = [];
+    const remaining = income - bills - savings;
+    if (remaining < 0) alerts.push({ type: 'danger', icon: '🚨', text: 'You are spending more than you earn! Reduce expenses immediately.' });
+    if (emergency < income) alerts.push({ type: 'warning', icon: '⚠️', text: `Emergency fund is below 1 month of income. Aim for 3-6 months ($${(income * 3).toFixed(0)} - $${(income * 6).toFixed(0)}).` });
+    if (savingsRate < 10 && income > 0) alerts.push({ type: 'warning', icon: '💡', text: 'Savings rate is below 10%. Try the 50/30/20 rule to improve.' });
+    if (bills / income > 0.7) alerts.push({ type: 'danger', icon: '🔴', text: 'Expenses exceed 70% of income. Review your spending categories.' });
+    if (savings > 0 && savingsRate >= 20) alerts.push({ type: 'success', icon: '✅', text: 'Great job! You are saving 20%+ of your income.' });
+    if (alerts.length === 0) alerts.push({ type: 'success', icon: '✅', text: 'Your budget looks healthy! Keep maintaining good habits.' });
+    el.innerHTML = alerts.map(a => `<div class="alert-item alert-${a.type}">${a.icon} ${a.text}</div>`).join('');
+}
+
+function renderBudgetRule(income, bills, savings) {
+    const el = document.getElementById('budgetRule');
+    if (income === 0) { el.innerHTML = '<p class="empty-state">Add income to see the 50/30/20 breakdown.</p>'; return; }
+    const needs = income * 0.50, wants = income * 0.30, savingsTarget = income * 0.20;
+    const needsPct = Math.min(100, (bills / needs * 100)).toFixed(0);
+    const savingsPct = Math.min(100, (savings / savingsTarget * 100)).toFixed(0);
+    el.innerHTML = `
+        <div class="rule-bar">
+            <div class="rule-bar-header"><span>🏠 Needs (50%)</span><span>$${bills.toFixed(2)} / $${needs.toFixed(2)}</span></div>
+            <div class="rule-bar-sub">Housing, utilities, groceries, transportation</div>
+            <div class="spending-bar-track"><div class="spending-bar-fill" style="width:${needsPct}%;background:${bills>needs?'#ef4444':'#667eea'}"></div></div>
+        </div>
+        <div class="rule-bar">
+            <div class="rule-bar-header"><span>🎬 Wants (30%)</span><span>Target: $${wants.toFixed(2)}</span></div>
+            <div class="rule-bar-sub">Entertainment, dining out, hobbies</div>
+            <div class="spending-bar-track"><div class="spending-bar-fill" style="width:30%;background:#f59e0b"></div></div>
+        </div>
+        <div class="rule-bar">
+            <div class="rule-bar-header"><span>💰 Savings (20%)</span><span>$${savings.toFixed(2)} / $${savingsTarget.toFixed(2)}</span></div>
+            <div class="rule-bar-sub">Emergency fund, retirement, goals</div>
+            <div class="spending-bar-track"><div class="spending-bar-fill" style="width:${savingsPct}%;background:#10b981"></div></div>
+        </div>`;
+}
+
+function renderTips(savingsRate, expenseRate, emergency, income) {
+    const allTips = [
+        { icon: '☕', title: 'Cut Daily Coffee', text: 'Making coffee at home instead of buying daily can save $100+ per month.' },
+        { icon: '📱', title: 'Review Subscriptions', text: 'Cancel unused streaming, gym, or app subscriptions. Most people waste $50-200/month.' },
+        { icon: '🛒', title: 'Meal Prep Weekly', text: 'Planning and prepping meals saves 30-50% on food costs compared to eating out.' },
+        { icon: '⚡', title: 'Reduce Utility Bills', text: 'Unplug devices, use LED bulbs, and adjust your thermostat to save $50-100/month.' },
+        { icon: '🚗', title: 'Carpool or Use Transit', text: 'Sharing rides or using public transport can cut transportation costs by 40-60%.' },
+        { icon: '🏦', title: 'Automate Savings', text: 'Set up automatic transfers to savings on payday so you save before you spend.' },
+        { icon: '💳', title: 'Pay Off High-Interest Debt', text: 'Paying off credit card debt (20%+ interest) is the best guaranteed return on your money.' },
+        { icon: '🛍️', title: '24-Hour Rule', text: 'Wait 24 hours before any non-essential purchase over $50 to avoid impulse buying.' },
+        { icon: '📊', title: 'Track Every Dollar', text: 'People who track spending save 15-20% more than those who don\'t.' },
+        { icon: '🎯', title: 'Set Specific Goals', text: 'Having a specific savings goal (e.g., $5,000 emergency fund) makes you 42% more likely to save.' },
+    ];
+    const tips = savingsRate < 10
+        ? allTips
+        : expenseRate > 70
+        ? allTips.slice(0, 6)
+        : allTips.slice(4);
+    document.getElementById('savingsTips').innerHTML = tips.slice(0, 6).map(t => `
+        <div class="tip-card">
+            <h4>${t.icon} ${t.title}</h4>
+            <p>${t.text}</p>
+        </div>`).join('');
+}
+
+function addGoalTracker() {
+    const name = document.getElementById('goalName').value.trim();
+    const target = parseFloat(document.getElementById('goalTarget').value);
+    const current = parseFloat(document.getElementById('goalCurrent').value) || 0;
+    if (!name || !target || target <= 0) return;
+    goalTrackers.push({ name, target, current });
+    localStorage.setItem('goalTrackers', JSON.stringify(goalTrackers));
+    document.getElementById('goalName').value = '';
+    document.getElementById('goalTarget').value = '';
+    document.getElementById('goalCurrent').value = '';
+    renderGoalsProgress();
+}
+
+function deleteGoalTracker(index) {
+    goalTrackers.splice(index, 1);
+    localStorage.setItem('goalTrackers', JSON.stringify(goalTrackers));
+    renderGoalsProgress();
+}
+
+function renderGoalsProgress() {
+    const el = document.getElementById('goalsProgress');
+    if (!el) return;
+    if (goalTrackers.length === 0) {
+        el.innerHTML = '<p class="empty-state" style="padding:20px 0;">No goals tracked yet. Add a goal below.</p>';
+        return;
+    }
+    el.innerHTML = goalTrackers.map((g, i) => {
+        const pct = Math.min(100, (g.current / g.target) * 100).toFixed(1);
+        const remaining = Math.max(0, g.target - g.current);
+        return `
+            <div class="goal-progress-item">
+                <div class="goal-progress-header">
+                    <span>🎯 ${g.name}</span>
+                    <button class="delete-btn" onclick="deleteGoalTracker(${i})" style="font-size:0.8em;padding:5px 12px;">Remove</button>
+                </div>
+                <div class="goal-progress-bar-track">
+                    <div class="goal-progress-bar-fill" style="width:${pct}%"></div>
+                </div>
+                <div class="goal-progress-footer">
+                    <span>$${g.current.toFixed(2)} saved of $${g.target.toFixed(2)}</span>
+                    <span>${pct}% — $${remaining.toFixed(2)} to go</span>
+                </div>
+            </div>`;
+    }).join('');
+}
