@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Budget Manager</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <nav class="navbar">
@@ -74,6 +75,10 @@
                 <h1>My Budget</h1>
                 <p>Manage your finances</p>
                 <button id="viewModeBtn" onclick="toggleViewMode()" class="view-mode-toggle">📅 Monthly View</button>
+                <div class="export-buttons">
+                    <button onclick="exportCSV()" class="export-btn csv-btn">⬇️ Export CSV</button>
+                    <button onclick="exportPDF()" class="export-btn pdf-btn">📄 Export PDF</button>
+                </div>
             </header>
 
         <div class="summary-cards">
@@ -572,5 +577,6 @@
     <script src="script.js"></script>
 </body>
 </html>
+
 
 
