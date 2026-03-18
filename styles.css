@@ -830,6 +830,35 @@ header h1 {
 }
 .view-mode-toggle:hover { background: var(--primary-dark); transform: translateY(-2px); }
 
+.export-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.export-btn {
+    padding: 10px 22px;
+    font-size: 0.95em;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.csv-btn {
+    background: #10b981;
+    color: white;
+}
+.csv-btn:hover { background: #059669; transform: translateY(-2px); }
+
+.pdf-btn {
+    background: #6366f1;
+    color: white;
+}
+.pdf-btn:hover { background: #4f46e5; transform: translateY(-2px); }
+
 .summary-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
