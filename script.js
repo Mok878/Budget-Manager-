@@ -464,10 +464,120 @@ function renderSpendingAnalysis() {
     }).join('');
 }
 
+// ===== EXPORTS =====
+function exportCSV() {
+    const m = getMultiplier();
+    const label = viewMode === 'yearly' ? 'Yearly' : 'Monthly';
+    let rows = [['Type', 'Category', 'Name/Goal', `Amount (${label})`]];
+
+    income.forEach(i => rows.push(['Income', i.category, i.source, (i.amount * m).toFixed(2)]));
+    bills.forEach(b => rows.push(['Expense', b.category, b.name, (b.amount * m).toFixed(2)]));
+    emergencySavings.forEach(s => rows.push(['Emergency Savings', '-', s.goal, (s.amount * m).toFixed(2)]));
+    retirement401k.forEach(s => rows.push(['401(k)', '-', s.goal, (s.amount * m).toFixed(2)]));
+    rothIRA.forEach(s => rows.push(['Roth IRA', '-', s.goal, (s.amount * m).toFixed(2)]));
+    savings.forEach(s => rows.push(['Regular Savings', '-', s.goal, (s.amount * m).toFixed(2)]));
+
+    const totalInc = income.reduce((s,i) => s + i.amount, 0) * m;
+    const totalExp = bills.reduce((s,i) => s + i.amount, 0) * m;
+    const totalSav = [...emergencySavings,...retirement401k,...rothIRA,...savings].reduce((s,i) => s + i.amount, 0) * m;
+    rows.push([]);
+    rows.push(['SUMMARY', '', 'Total Income', totalInc.toFixed(2)]);
+    rows.push(['SUMMARY', '', 'Total Expenses', totalExp.toFixed(2)]);
+    rows.push(['SUMMARY', '', 'Total Savings', totalSav.toFixed(2)]);
+    rows.push(['SUMMARY', '', 'Remaining', (totalInc - totalExp - totalSav).toFixed(2)]);
+
+    const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `budget-report-${label.toLowerCase()}.csv`;
+    a.click();
+}
+
+function exportPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const m = getMultiplier();
+    const label = viewMode === 'yearly' ? 'Yearly' : 'Monthly';
+
+    const totalInc = income.reduce((s,i) => s + i.amount, 0) * m;
+    const totalExp = bills.reduce((s,i) => s + i.amount, 0) * m;
+    const totalEmerg = emergencySavings.reduce((s,i) => s + i.amount, 0) * m;
+    const total401 = retirement401k.reduce((s,i) => s + i.amount, 0) * m;
+    const totalRoth = rothIRA.reduce((s,i) => s + i.amount, 0) * m;
+    const totalReg = savings.reduce((s,i) => s + i.amount, 0) * m;
+    const totalSav = totalEmerg + total401 + totalRoth + totalReg;
+    const remaining = totalInc - totalExp - totalSav;
+
+    let y = 20;
+    const line = (text, x = 14, size = 11, style = 'normal') => {
+        doc.setFontSize(size); doc.setFont('helvetica', style);
+        doc.text(text, x, y); y += size * 0.6;
+    };
+    const gap = (n = 6) => { y += n; };
+    const rule = () => { doc.setDrawColor(13, 148, 136); doc.line(14, y, 196, y); gap(4); };
+
+    // Header
+    doc.setFillColor(13, 148, 136);
+    doc.rect(0, 0, 210, 28, 'F');
+    doc.setTextColor(255, 255, 255);
+    line('💰 Budget Manager — ' + label + ' Report', 14, 16, 'bold');
+    gap(2);
+    line('Generated: ' + new Date().toLocaleDateString(), 14, 9);
+    y = 38; doc.setTextColor(30, 30, 30);
+
+    // Summary box
+    doc.setFillColor(240, 253, 250);
+    doc.roundedRect(14, y, 182, 38, 4, 4, 'F');
+    y += 8;
+    line('SUMMARY', 20, 11, 'bold');
+    gap(2);
+    doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+    doc.text(`Total Income: $${totalInc.toFixed(2)}`, 20, y);
+    doc.text(`Total Expenses: $${totalExp.toFixed(2)}`, 80, y); y += 7;
+    doc.text(`Total Savings: $${totalSav.toFixed(2)}`, 20, y);
+    doc.text(`Remaining: $${remaining.toFixed(2)}`, 80, y); y += 12;
+
+    // Income
+    gap(2); rule();
+    line('INCOME', 14, 12, 'bold');
+    gap(3);
+    if (income.length === 0) { line('No income added.', 14, 10); gap(3); }
+    else income.forEach(i => { doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.text(`• [${i.category}] ${i.source}`, 16, y); doc.text(`$${(i.amount*m).toFixed(2)}`, 170, y, {align:'right'}); y += 6; });
+
+    // Expenses
+    gap(2); rule();
+    line('EXPENSES', 14, 12, 'bold');
+    gap(3);
+    if (bills.length === 0) { line('No expenses added.', 14, 10); gap(3); }
+    else bills.forEach(b => { doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.text(`• [${b.category}] ${b.name}`, 16, y); doc.text(`$${(b.amount*m).toFixed(2)}`, 170, y, {align:'right'}); y += 6; });
+
+    // Savings
+    gap(2); rule();
+    line('SAVINGS', 14, 12, 'bold');
+    gap(3);
+    const allSav = [
+        ...emergencySavings.map(s=>({...s,type:'Emergency'})),
+        ...retirement401k.map(s=>({...s,type:'401(k)'})),
+        ...rothIRA.map(s=>({...s,type:'Roth IRA'})),
+        ...savings.map(s=>({...s,type:'Regular'})),
+    ];
+    if (!allSav.length) { line('No savings added.', 14, 10); }
+    else allSav.forEach(s => { doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.text(`• [${s.type}] ${s.goal}`, 16, y); doc.text(`$${(s.amount*m).toFixed(2)}`, 170, y, {align:'right'}); y += 6; });
+
+    // Footer
+    doc.setFontSize(8); doc.setTextColor(120,120,120);
+    doc.text('Budget Manager — budgetmanager.com', 105, 290, {align:'center'});
+
+    doc.save(`budget-report-${label.toLowerCase()}.pdf`);
+}
+
 // ===== INIT =====
 loadData();
 loadTheme();
 checkAuth();
+
+
 
 
 
