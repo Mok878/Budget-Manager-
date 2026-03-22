@@ -12,17 +12,17 @@
         <div class="nav-container">
             <div class="nav-brand">💰 Budget Manager</div>
             <ul class="nav-menu">
-                <li class="active"><a href="#home" onclick="showSection('home')">Home</a></li>
-                <li><a href="#budget" onclick="showSection('budget')">My Budget</a></li>
-                <li><a href="#advisor" onclick="showSection('advisor')">Savings Advisor</a></li>
-                <li><a href="#spending" onclick="showSection('spending')">Spending Analysis</a></li>
-                <li><a href="#pricing" onclick="showSection('pricing')">Pricing</a></li>
-                <li><a href="#about" onclick="showSection('about')">About</a></li>
-                <li><a href="#contact" onclick="showSection('contact')">Contact</a></li>
+                <li class="active"><a href="#home" onclick="showSection('home')" data-i18n="nav_home">Home</a></li>
+                <li><a href="#budget" onclick="showSection('budget')" data-i18n="nav_budget">My Budget</a></li>
+                <li><a href="#advisor" onclick="showSection('advisor')" data-i18n="nav_advisor">Savings Advisor</a></li>
+                <li><a href="#spending" onclick="showSection('spending')" data-i18n="nav_spending">Spending Analysis</a></li>
+                <li><a href="#pricing" onclick="showSection('pricing')" data-i18n="nav_pricing">Pricing</a></li>
+                <li><a href="#about" onclick="showSection('about')" data-i18n="nav_about">About</a></li>
+                <li><a href="#contact" onclick="showSection('contact')" data-i18n="nav_contact">Contact</a></li>
             </ul>
             <div class="auth-buttons" id="authButtons">
-                <button onclick="showSection('login')" class="login-btn">Login</button>
-                <button onclick="showSection('register')" class="register-btn">Sign Up</button>
+                <button onclick="showSection('login')" class="login-btn" data-i18n="nav_login">Login</button>
+                <button onclick="showSection('register')" class="register-btn" data-i18n="nav_signup">Sign Up</button>
             </div>
             <div class="user-menu" id="userMenu" style="display: none;">
                 <span class="user-name" id="userName"></span>
@@ -32,6 +32,13 @@
                 <span class="sun-icon">☀️</span>
                 <span class="moon-icon">🌙</span>
             </button>
+            <div class="lang-selector">
+                <select id="langSelect" onchange="setLanguage(this.value)">
+                    <option value="en">🇺🇸 EN</option>
+                    <option value="es">🇪🇸 ES</option>
+                    <option value="ar">🇸🇦 AR</option>
+                </select>
+            </div>
             <div class="hamburger" onclick="toggleMenu()">
                 <span></span>
                 <span></span>
@@ -47,25 +54,25 @@
                 <p>Track your income, bills, and savings</p>
             </header>
             <div class="hero">
-                <h2>Take Control of Your Finances</h2>
-                <p>Manage your income, track expenses by category, and reach your savings goals with our easy-to-use budget manager.</p>
-                <button onclick="showSection('budget')" class="cta-button">Get Started</button>
+                <h2 data-i18n="hero_title">Take Control of Your Finances</h2>
+                <p data-i18n="hero_sub">Manage your income, track expenses by category, and reach your savings goals with our easy-to-use budget manager.</p>
+                <button onclick="showSection('budget')" class="cta-button" data-i18n="hero_cta">Get Started</button>
             </div>
             <div class="features">
                 <div class="feature-card" onclick="goToSection('income-section')" style="cursor: pointer;">
                     <span class="feature-icon">📊</span>
-                    <h3>Track Income</h3>
-                    <p>Monitor all your income sources in one place with organized categories</p>
+                    <h3 data-i18n="feat_income">Track Income</h3>
+                    <p data-i18n="feat_income_sub">Monitor all your income sources in one place with organized categories</p>
                 </div>
                 <div class="feature-card" onclick="goToSection('bills-section')" style="cursor: pointer;">
                     <span class="feature-icon">💳</span>
-                    <h3>Categorize Expenses</h3>
-                    <p>Organize bills by category: housing, food, transportation, and more</p>
+                    <h3 data-i18n="feat_expenses">Categorize Expenses</h3>
+                    <p data-i18n="feat_expenses_sub">Organize bills by category: housing, food, transportation, and more</p>
                 </div>
                 <div class="feature-card" onclick="goToSection('emergency-section')" style="cursor: pointer;">
                     <span class="feature-icon">🎯</span>
-                    <h3>Set Savings Goals</h3>
-                    <p>Plan and track your emergency and regular savings objectives</p>
+                    <h3 data-i18n="feat_savings">Set Savings Goals</h3>
+                    <p data-i18n="feat_savings_sub">Plan and track your emergency and regular savings objectives</p>
                 </div>
             </div>
         </section>
@@ -577,6 +584,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
-
-
