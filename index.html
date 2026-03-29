@@ -26,7 +26,12 @@
             </div>
             <div class="user-menu" id="userMenu" style="display: none;">
                 <span class="user-name" id="userName"></span>
-                <button onclick="logout()" class="logout-btn">Logout</button>
+                <button onclick="logout()" class="logout-btn" data-i18n="nav_logout">Logout</button>
+            </div>
+            <div class="lang-switcher">
+                <button onclick="setLang('en')" class="lang-btn" id="lang-en">🇺🇸 EN</button>
+                <button onclick="setLang('ar')" class="lang-btn" id="lang-ar">🇸🇦 AR</button>
+                <button onclick="setLang('es')" class="lang-btn" id="lang-es">🇪🇸 ES</button>
             </div>
             <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
                 <span class="sun-icon">☀️</span>
@@ -79,59 +84,59 @@
 
         <section id="budget" class="page-section">
             <header>
-                <h1>My Budget</h1>
-                <p>Manage your finances</p>
-                <button id="viewModeBtn" onclick="toggleViewMode()" class="view-mode-toggle">📅 Monthly View</button>
+                <h1 data-i18n="budget_title">My Budget</h1>
+                <p data-i18n="budget_sub">Manage your finances</p>
+                <button id="viewModeBtn" onclick="toggleViewMode()" class="view-mode-toggle" data-i18n="btn_monthly">📅 Monthly View</button>
                 <div class="export-buttons">
-                    <button onclick="exportCSV()" class="export-btn csv-btn">⬇️ Export CSV</button>
-                    <button onclick="exportPDF()" class="export-btn pdf-btn">📄 Export PDF</button>
+                    <button onclick="exportCSV()" class="export-btn csv-btn" data-i18n="export_csv">⬇️ Export CSV</button>
+                    <button onclick="exportPDF()" class="export-btn pdf-btn" data-i18n="export_pdf">📄 Export PDF</button>
                 </div>
             </header>
 
         <div class="summary-cards">
             <div class="card income-card">
-                <h3>Total Income</h3>
+                <h3 data-i18n="lbl_total_income">Total Income</h3>
                 <p class="amount" id="totalIncome">$0.00</p>
             </div>
             <div class="card bills-card">
-                <h3>Total Bills</h3>
+                <h3 data-i18n="lbl_total_bills">Total Bills</h3>
                 <p class="amount" id="totalBills">$0.00</p>
             </div>
             <div class="card total-savings-card">
-                <h3>Total Savings</h3>
+                <h3 data-i18n="lbl_total_savings">Total Savings</h3>
                 <p class="amount" id="totalAllSavings">$0.00</p>
             </div>
             <div class="card available-card">
-                <h3>Available to Save</h3>
+                <h3 data-i18n="lbl_available">Available to Save</h3>
                 <p class="amount" id="availableSavings">$0.00</p>
             </div>
         </div>
 
         <div class="summary-cards savings-breakdown">
             <div class="card savings-card">
-                <h3>Emergency Savings</h3>
+                <h3 data-i18n="lbl_emergency">Emergency Savings</h3>
                 <p class="amount" id="emergencySavings">$0.00</p>
             </div>
             <div class="card retirement-card">
-                <h3>401(k)</h3>
+                <h3 data-i18n="lbl_401k">401(k)</h3>
                 <p class="amount" id="total401k">$0.00</p>
             </div>
             <div class="card retirement-card">
-                <h3>Roth IRA</h3>
+                <h3 data-i18n="lbl_roth">Roth IRA</h3>
                 <p class="amount" id="totalRothIRA">$0.00</p>
             </div>
             <div class="card savings-card">
-                <h3>Regular Savings</h3>
+                <h3 data-i18n="lbl_regular">Regular Savings</h3>
                 <p class="amount" id="regularSavings">$0.00</p>
             </div>
         </div>
 
         <div class="sections">
             <section class="income-section" id="income-section">
-                <h2>Income Sources</h2>
+                <h2 data-i18n="sec_income">Income Sources</h2>
                 <div class="input-group">
                     <select id="incomeCategory">
-                        <option value="">Select Category</option>
+                        <option value="" data-i18n-ph="ph_income_cat">Select Category</option>
                         <option value="Salary">💼 Salary</option>
                         <option value="Side Hustle">🚀 Side Hustle</option>
                         <option value="Freelance">💻 Freelance</option>
@@ -141,18 +146,18 @@
                         <option value="Pension">👴 Pension</option>
                         <option value="Other">💰 Other</option>
                     </select>
-                    <input type="text" id="incomeSource" placeholder="Source name (e.g., Main Job)">
-                    <input type="number" id="incomeAmount" placeholder="Amount" step="0.01">
-                    <button onclick="addIncome()">Add Income</button>
+                    <input type="text" id="incomeSource" placeholder="Source name (e.g., Main Job)" data-i18n-ph="ph_income_src">
+                    <input type="number" id="incomeAmount" placeholder="Amount" data-i18n-ph="ph_amount" step="0.01">
+                    <button onclick="addIncome()" data-i18n="btn_add_income">Add Income</button>
                 </div>
                 <ul id="incomeList" class="item-list"></ul>
             </section>
 
             <section class="bills-section" id="bills-section">
-                <h2>Bills & Expenses</h2>
+                <h2 data-i18n="sec_bills">Bills & Expenses</h2>
                 <div class="input-group">
                     <select id="billCategory">
-                        <option value="">Select Category</option>
+                        <option value="" data-i18n-ph="ph_bill_cat">Select Category</option>
                         <option value="Housing">🏠 Housing</option>
                         <option value="Utilities">💡 Utilities</option>
                         <option value="Transportation">🚗 Transportation</option>
@@ -164,49 +169,49 @@
                         <option value="Personal">👤 Personal Care</option>
                         <option value="Other">📌 Other</option>
                     </select>
-                    <input type="text" id="billName" placeholder="Bill name (e.g., Mortgage)">
-                    <input type="number" id="billAmount" placeholder="Amount" step="0.01">
-                    <button onclick="addBill()">Add Expense</button>
+                    <input type="text" id="billName" placeholder="Bill name (e.g., Mortgage)" data-i18n-ph="ph_bill_name">
+                    <input type="number" id="billAmount" placeholder="Amount" data-i18n-ph="ph_amount" step="0.01">
+                    <button onclick="addBill()" data-i18n="btn_add_bill">Add Expense</button>
                 </div>
                 <ul id="billsList" class="item-list"></ul>
             </section>
 
             <section class="savings-section" id="emergency-section">
-                <h2>💰 Emergency Savings</h2>
+                <h2 data-i18n="sec_emergency">💰 Emergency Savings</h2>
                 <div class="input-group">
-                    <input type="text" id="emergencyGoal" placeholder="Goal (e.g., Emergency Fund, Medical)">
-                    <input type="number" id="emergencyAmount" placeholder="Amount to save" step="0.01">
-                    <button onclick="addEmergencySavings()">Add Emergency Goal</button>
+                    <input type="text" id="emergencyGoal" placeholder="Goal (e.g., Emergency Fund, Medical)" data-i18n-ph="ph_emergency_goal">
+                    <input type="number" id="emergencyAmount" placeholder="Amount to save" data-i18n-ph="ph_emergency_amt" step="0.01">
+                    <button onclick="addEmergencySavings()" data-i18n="btn_add_emergency">Add Emergency Goal</button>
                 </div>
                 <ul id="emergencySavingsList" class="item-list"></ul>
             </section>
 
             <section class="savings-section">
-                <h2>� 401(k) Retirement</h2>
+                <h2 data-i18n="sec_401k">🏦 401(k) Retirement</h2>
                 <div class="input-group">
-                    <input type="text" id="401kGoal" placeholder="Goal (e.g., Monthly Contribution)">
-                    <input type="number" id="401kAmount" placeholder="Amount to save" step="0.01">
-                    <button onclick="add401k()">Add 401(k) Goal</button>
+                    <input type="text" id="401kGoal" placeholder="Goal (e.g., Monthly Contribution)" data-i18n-ph="ph_401k_goal">
+                    <input type="number" id="401kAmount" placeholder="Amount to save" data-i18n-ph="ph_emergency_amt" step="0.01">
+                    <button onclick="add401k()" data-i18n="btn_add_401k">Add 401(k) Goal</button>
                 </div>
                 <ul id="401kList" class="item-list"></ul>
             </section>
 
             <section class="savings-section">
-                <h2>💎 Roth IRA</h2>
+                <h2 data-i18n="sec_roth">💎 Roth IRA</h2>
                 <div class="input-group">
-                    <input type="text" id="rothGoal" placeholder="Goal (e.g., Annual Contribution)">
-                    <input type="number" id="rothAmount" placeholder="Amount to save" step="0.01">
-                    <button onclick="addRothIRA()">Add Roth IRA Goal</button>
+                    <input type="text" id="rothGoal" placeholder="Goal (e.g., Annual Contribution)" data-i18n-ph="ph_roth_goal">
+                    <input type="number" id="rothAmount" placeholder="Amount to save" data-i18n-ph="ph_emergency_amt" step="0.01">
+                    <button onclick="addRothIRA()" data-i18n="btn_add_roth">Add Roth IRA Goal</button>
                 </div>
                 <ul id="rothIRAList" class="item-list"></ul>
             </section>
 
             <section class="savings-section">
-                <h2>🎯 Regular Savings</h2>
+                <h2 data-i18n="sec_regular">🎯 Regular Savings</h2>
                 <div class="input-group">
-                    <input type="text" id="savingsGoal" placeholder="Goal (e.g., Vacation, New Car)">
-                    <input type="number" id="savingsAmount" placeholder="Amount to save" step="0.01">
-                    <button onclick="addSavings()">Add Savings Goal</button>
+                    <input type="text" id="savingsGoal" placeholder="Goal (e.g., Vacation, New Car)" data-i18n-ph="ph_savings_goal">
+                    <input type="number" id="savingsAmount" placeholder="Amount to save" data-i18n-ph="ph_emergency_amt" step="0.01">
+                    <button onclick="addSavings()" data-i18n="btn_add_savings">Add Savings Goal</button>
                 </div>
                 <ul id="savingsList" class="item-list"></ul>
             </section>
@@ -216,8 +221,8 @@
         <section id="advisor" class="page-section">
             <div class="advisor-container">
                 <header>
-                    <h1>💡 Savings Advisor</h1>
-                    <p>Personalized insights to help you save smarter</p>
+                    <h1 data-i18n="advisor_title">💡 Savings Advisor</h1>
+                    <p data-i18n="advisor_sub">Personalized insights to help you save smarter</p>
                 </header>
 
                 <div class="health-score-card">
@@ -286,8 +291,8 @@
         <section id="spending" class="page-section">
             <div class="spending-container">
                 <header>
-                    <h1>📈 Spending Analysis</h1>
-                    <p>See where your money goes across every time period</p>
+                    <h1 data-i18n="spending_title">📈 Spending Analysis</h1>
+                    <p data-i18n="spending_sub">See where your money goes across every time period</p>
                 </header>
 
                 <div class="period-tabs">
@@ -326,8 +331,8 @@
         <section id="pricing" class="page-section">
             <div class="pricing-container">
                 <header>
-                    <h1>Choose Your Plan</h1>
-                    <p>Select the perfect plan for your financial journey</p>
+                    <h1 data-i18n="pricing_title">Choose Your Plan</h1>
+                    <p data-i18n="pricing_sub">Select the perfect plan for your financial journey</p>
                 </header>
 
                 <div class="pricing-cards">
@@ -428,8 +433,8 @@
         <section id="login" class="page-section">
             <div class="auth-container">
                 <div class="auth-card">
-                    <h1>Welcome Back</h1>
-                    <p>Login to manage your budget</p>
+                    <h1 data-i18n="login_title">Welcome Back</h1>
+                    <p data-i18n="login_sub">Login to manage your budget</p>
                     
                     <form class="auth-form" onsubmit="handleLogin(event)">
                         <div class="form-group">
@@ -473,8 +478,8 @@
         <section id="register" class="page-section">
             <div class="auth-container">
                 <div class="auth-card">
-                    <h1>Create Account</h1>
-                    <p>Start your financial journey today</p>
+                    <h1 data-i18n="register_title">Create Account</h1>
+                    <p data-i18n="register_sub">Start your financial journey today</p>
                     
                     <form class="auth-form" onsubmit="handleRegister(event)">
                         <div class="form-group">
@@ -524,7 +529,7 @@
 
         <section id="about" class="page-section">
             <div class="content-page">
-                <h1>About Budget Manager</h1>
+                <h1 data-i18n="about_title">About Budget Manager</h1>
                 <p>Budget Manager is a simple, intuitive tool designed to help you take control of your personal finances. Whether you're trying to save for a big purchase, pay off debt, or just understand where your money goes each month, we're here to help.</p>
                 
                 <h2>Why Budget Manager?</h2>
@@ -547,8 +552,8 @@
 
         <section id="contact" class="page-section">
             <div class="content-page">
-                <h1>Contact Us</h1>
-                <p>Have questions, feedback, or suggestions? We'd love to hear from you!</p>
+                <h1 data-i18n="contact_title">Contact Us</h1>
+                <p data-i18n="contact_sub">Have questions, feedback, or suggestions? We'd love to hear from you!</p>
                 
                 <form class="contact-form" onsubmit="handleContact(event)">
                     <div class="form-group">
@@ -584,3 +589,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
