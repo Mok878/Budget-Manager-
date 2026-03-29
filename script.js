@@ -3,6 +3,141 @@ let income = [], bills = [], savings = [], emergencySavings = [], retirement401k
 let viewMode = 'monthly', currentUser = null, currentPeriod = 'monthly';
 let goalTrackers = JSON.parse(localStorage.getItem('goalTrackers') || '[]');
 
+// ===== I18N =====
+const translations = {
+    en: {
+        nav_home: 'Home', nav_budget: 'My Budget', nav_advisor: 'Savings Advisor',
+        nav_spending: 'Spending Analysis', nav_pricing: 'Pricing', nav_about: 'About',
+        nav_contact: 'Contact', nav_login: 'Login', nav_signup: 'Sign Up', nav_logout: 'Logout',
+        hero_title: 'Take Control of Your Finances',
+        hero_sub: 'Manage your income, track expenses by category, and reach your savings goals with our easy-to-use budget manager.',
+        hero_cta: 'Get Started',
+        feat_income: 'Track Income', feat_income_sub: 'Monitor all your income sources in one place with organized categories',
+        feat_expenses: 'Categorize Expenses', feat_expenses_sub: 'Organize bills by category: housing, food, transportation, and more',
+        feat_savings: 'Set Savings Goals', feat_savings_sub: 'Plan and track your emergency and regular savings objectives',
+        budget_title: 'My Budget', budget_sub: 'Manage your finances',
+        btn_monthly: '📅 Monthly View', btn_yearly: '📆 Yearly View',
+        export_csv: '⬇️ Export CSV', export_pdf: '📄 Export PDF',
+        lbl_total_income: 'Total Income', lbl_total_bills: 'Total Bills',
+        lbl_total_savings: 'Total Savings', lbl_available: 'Available to Save',
+        lbl_emergency: 'Emergency Savings', lbl_401k: '401(k)', lbl_roth: 'Roth IRA', lbl_regular: 'Regular Savings',
+        sec_income: 'Income Sources', sec_bills: 'Bills & Expenses',
+        sec_emergency: '💰 Emergency Savings', sec_401k: '🏦 401(k) Retirement',
+        sec_roth: '💎 Roth IRA', sec_regular: '🎯 Regular Savings',
+        btn_add_income: 'Add Income', btn_add_bill: 'Add Expense',
+        btn_add_emergency: 'Add Emergency Goal', btn_add_401k: 'Add 401(k) Goal',
+        btn_add_roth: 'Add Roth IRA Goal', btn_add_savings: 'Add Savings Goal',
+        ph_income_src: 'Source name (e.g., Main Job)', ph_amount: 'Amount',
+        ph_bill_name: 'Bill name (e.g., Mortgage)',
+        ph_emergency_goal: 'Goal (e.g., Emergency Fund)', ph_emergency_amt: 'Amount to save',
+        ph_401k_goal: 'Goal (e.g., Monthly Contribution)', ph_roth_goal: 'Goal (e.g., Annual Contribution)',
+        ph_savings_goal: 'Goal (e.g., Vacation, New Car)',
+        advisor_title: '💡 Savings Advisor', advisor_sub: 'Personalized insights to help you save smarter',
+        spending_title: '📈 Spending Analysis', spending_sub: 'See where your money goes across every time period',
+        pricing_title: 'Choose Your Plan', pricing_sub: 'Select the perfect plan for your financial journey',
+        about_title: 'About Budget Manager',
+        contact_title: 'Contact Us', contact_sub: "Have questions, feedback, or suggestions? We'd love to hear from you!",
+        login_title: 'Welcome Back', login_sub: 'Login to manage your budget',
+        register_title: 'Create Account', register_sub: 'Start your financial journey today',
+        btn_login: 'Login', btn_register: 'Create Account', btn_send: 'Send Message', btn_delete: 'Delete',
+    },
+    ar: {
+        nav_home: 'الرئيسية', nav_budget: 'ميزانيتي', nav_advisor: 'مستشار الادخار',
+        nav_spending: 'تحليل الإنفاق', nav_pricing: 'الأسعار', nav_about: 'عن التطبيق',
+        nav_contact: 'تواصل معنا', nav_login: 'تسجيل الدخول', nav_signup: 'إنشاء حساب', nav_logout: 'تسجيل الخروج',
+        hero_title: 'تحكم في أموالك',
+        hero_sub: 'أدر دخلك، تتبع نفقاتك حسب الفئة، وحقق أهداف ادخارك مع مدير الميزانية السهل الاستخدام.',
+        hero_cta: 'ابدأ الآن',
+        feat_income: 'تتبع الدخل', feat_income_sub: 'راقب جميع مصادر دخلك في مكان واحد مع تصنيفات منظمة',
+        feat_expenses: 'تصنيف النفقات', feat_expenses_sub: 'نظّم الفواتير حسب الفئة: السكن، الغذاء، المواصلات، والمزيد',
+        feat_savings: 'أهداف الادخار', feat_savings_sub: 'خطط وتتبع أهداف الادخار الطارئة والمنتظمة',
+        budget_title: 'ميزانيتي', budget_sub: 'أدر أموالك',
+        btn_monthly: '📅 عرض شهري', btn_yearly: '📆 عرض سنوي',
+        export_csv: '⬇️ تصدير CSV', export_pdf: '📄 تصدير PDF',
+        lbl_total_income: 'إجمالي الدخل', lbl_total_bills: 'إجمالي الفواتير',
+        lbl_total_savings: 'إجمالي المدخرات', lbl_available: 'المتاح للادخار',
+        lbl_emergency: 'مدخرات الطوارئ', lbl_401k: 'تقاعد 401(k)', lbl_roth: 'روث IRA', lbl_regular: 'مدخرات منتظمة',
+        sec_income: 'مصادر الدخل', sec_bills: 'الفواتير والنفقات',
+        sec_emergency: '💰 مدخرات الطوارئ', sec_401k: '🏦 تقاعد 401(k)',
+        sec_roth: '💎 روث IRA', sec_regular: '🎯 مدخرات منتظمة',
+        btn_add_income: 'إضافة دخل', btn_add_bill: 'إضافة نفقة',
+        btn_add_emergency: 'إضافة هدف طوارئ', btn_add_401k: 'إضافة هدف 401(k)',
+        btn_add_roth: 'إضافة هدف روث IRA', btn_add_savings: 'إضافة هدف ادخار',
+        ph_income_src: 'اسم المصدر (مثال: الراتب)', ph_amount: 'المبلغ',
+        ph_bill_name: 'اسم الفاتورة (مثال: الإيجار)',
+        ph_emergency_goal: 'الهدف (مثال: صندوق الطوارئ)', ph_emergency_amt: 'المبلغ المراد ادخاره',
+        ph_401k_goal: 'الهدف (مثال: مساهمة شهرية)', ph_roth_goal: 'الهدف (مثال: مساهمة سنوية)',
+        ph_savings_goal: 'الهدف (مثال: إجازة، سيارة جديدة)',
+        advisor_title: '💡 مستشار الادخار', advisor_sub: 'رؤى مخصصة لمساعدتك على الادخار بذكاء',
+        spending_title: '📈 تحليل الإنفاق', spending_sub: 'اعرف أين تذهب أموالك في كل فترة زمنية',
+        pricing_title: 'اختر خطتك', pricing_sub: 'اختر الخطة المثالية لرحلتك المالية',
+        about_title: 'عن مدير الميزانية',
+        contact_title: 'تواصل معنا', contact_sub: 'هل لديك أسئلة أو اقتراحات؟ يسعدنا سماعك!',
+        login_title: 'مرحباً بعودتك', login_sub: 'سجّل دخولك لإدارة ميزانيتك',
+        register_title: 'إنشاء حساب', register_sub: 'ابدأ رحلتك المالية اليوم',
+        btn_login: 'تسجيل الدخول', btn_register: 'إنشاء الحساب', btn_send: 'إرسال الرسالة', btn_delete: 'حذف',
+    },
+    es: {
+        nav_home: 'Inicio', nav_budget: 'Mi Presupuesto', nav_advisor: 'Asesor de Ahorro',
+        nav_spending: 'Análisis de Gastos', nav_pricing: 'Precios', nav_about: 'Acerca de',
+        nav_contact: 'Contacto', nav_login: 'Iniciar Sesión', nav_signup: 'Registrarse', nav_logout: 'Cerrar Sesión',
+        hero_title: 'Toma el Control de tus Finanzas',
+        hero_sub: 'Gestiona tus ingresos, rastrea gastos por categoría y alcanza tus metas de ahorro con nuestro gestor de presupuesto.',
+        hero_cta: 'Comenzar',
+        feat_income: 'Rastrear Ingresos', feat_income_sub: 'Monitorea todas tus fuentes de ingresos en un solo lugar',
+        feat_expenses: 'Categorizar Gastos', feat_expenses_sub: 'Organiza facturas por categoría: vivienda, comida, transporte y más',
+        feat_savings: 'Metas de Ahorro', feat_savings_sub: 'Planifica y rastrea tus objetivos de ahorro de emergencia y regulares',
+        budget_title: 'Mi Presupuesto', budget_sub: 'Gestiona tus finanzas',
+        btn_monthly: '📅 Vista Mensual', btn_yearly: '📆 Vista Anual',
+        export_csv: '⬇️ Exportar CSV', export_pdf: '📄 Exportar PDF',
+        lbl_total_income: 'Ingresos Totales', lbl_total_bills: 'Facturas Totales',
+        lbl_total_savings: 'Ahorros Totales', lbl_available: 'Disponible para Ahorrar',
+        lbl_emergency: 'Ahorro de Emergencia', lbl_401k: '401(k)', lbl_roth: 'Roth IRA', lbl_regular: 'Ahorro Regular',
+        sec_income: 'Fuentes de Ingresos', sec_bills: 'Facturas y Gastos',
+        sec_emergency: '💰 Ahorro de Emergencia', sec_401k: '🏦 Jubilación 401(k)',
+        sec_roth: '💎 Roth IRA', sec_regular: '🎯 Ahorro Regular',
+        btn_add_income: 'Agregar Ingreso', btn_add_bill: 'Agregar Gasto',
+        btn_add_emergency: 'Agregar Meta de Emergencia', btn_add_401k: 'Agregar Meta 401(k)',
+        btn_add_roth: 'Agregar Meta Roth IRA', btn_add_savings: 'Agregar Meta de Ahorro',
+        ph_income_src: 'Nombre de fuente (ej. Trabajo Principal)', ph_amount: 'Monto',
+        ph_bill_name: 'Nombre de factura (ej. Hipoteca)',
+        ph_emergency_goal: 'Meta (ej. Fondo de Emergencia)', ph_emergency_amt: 'Monto a ahorrar',
+        ph_401k_goal: 'Meta (ej. Contribución Mensual)', ph_roth_goal: 'Meta (ej. Contribución Anual)',
+        ph_savings_goal: 'Meta (ej. Vacaciones, Auto Nuevo)',
+        advisor_title: '💡 Asesor de Ahorro', advisor_sub: 'Perspectivas personalizadas para ayudarte a ahorrar mejor',
+        spending_title: '📈 Análisis de Gastos', spending_sub: 'Ve a dónde va tu dinero en cada período de tiempo',
+        pricing_title: 'Elige tu Plan', pricing_sub: 'Selecciona el plan perfecto para tu viaje financiero',
+        about_title: 'Acerca del Gestor de Presupuesto',
+        contact_title: 'Contáctanos', contact_sub: '¿Tienes preguntas o sugerencias? ¡Nos encantaría escucharte!',
+        login_title: 'Bienvenido de Nuevo', login_sub: 'Inicia sesión para gestionar tu presupuesto',
+        register_title: 'Crear Cuenta', register_sub: 'Comienza tu viaje financiero hoy',
+        btn_login: 'Iniciar Sesión', btn_register: 'Crear Cuenta', btn_send: 'Enviar Mensaje', btn_delete: 'Eliminar',
+    }
+};
+
+let currentLang = localStorage.getItem('lang') || 'en';
+
+function setLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('lang', lang);
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) el.textContent = translations[lang][key];
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+        const key = el.getAttribute('data-i18n-ph');
+        if (translations[lang][key]) el.placeholder = translations[lang][key];
+    });
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    const activeBtn = document.getElementById('lang-' + lang);
+    if (activeBtn) activeBtn.classList.add('active');
+    renderAll();
+}
+
+function loadLang() { setLang(currentLang); }
+
 // ===== THEME =====
 function toggleTheme() {
     document.body.classList.toggle('dark-mode');
@@ -573,151 +708,13 @@ function exportPDF() {
     doc.save(`budget-report-${label.toLowerCase()}.pdf`);
 }
 
-// ===== I18N =====
-const translations = {
-    en: {
-        nav_home: 'Home', nav_budget: 'My Budget', nav_advisor: 'Savings Advisor',
-        nav_spending: 'Spending Analysis', nav_pricing: 'Pricing', nav_about: 'About',
-        nav_contact: 'Contact', nav_login: 'Login', nav_signup: 'Sign Up', nav_logout: 'Logout',
-        hero_title: 'Take Control of Your Finances',
-        hero_sub: 'Manage your income, track expenses by category, and reach your savings goals with our easy-to-use budget manager.',
-        hero_cta: 'Get Started',
-        feat_income: 'Track Income', feat_income_sub: 'Monitor all your income sources in one place with organized categories',
-        feat_expenses: 'Categorize Expenses', feat_expenses_sub: 'Organize bills by category: housing, food, transportation, and more',
-        feat_savings: 'Set Savings Goals', feat_savings_sub: 'Plan and track your emergency and regular savings objectives',
-        budget_title: 'My Budget', budget_sub: 'Manage your finances',
-        btn_monthly: '📅 Monthly View', btn_yearly: '📆 Yearly View',
-        export_csv: '⬇️ Export CSV', export_pdf: '📄 Export PDF',
-        lbl_total_income: 'Total Income', lbl_total_bills: 'Total Bills',
-        lbl_total_savings: 'Total Savings', lbl_available: 'Available to Save',
-        lbl_emergency: 'Emergency Savings', lbl_401k: '401(k)', lbl_roth: 'Roth IRA', lbl_regular: 'Regular Savings',
-        sec_income: 'Income Sources', sec_bills: 'Bills & Expenses',
-        sec_emergency: '💰 Emergency Savings', sec_401k: '🏦 401(k) Retirement',
-        sec_roth: '💎 Roth IRA', sec_regular: '🎯 Regular Savings',
-        btn_add_income: 'Add Income', btn_add_bill: 'Add Expense',
-        btn_add_emergency: 'Add Emergency Goal', btn_add_401k: 'Add 401(k) Goal',
-        btn_add_roth: 'Add Roth IRA Goal', btn_add_savings: 'Add Savings Goal',
-        ph_income_cat: 'Select Category', ph_income_src: 'Source name (e.g., Main Job)', ph_amount: 'Amount',
-        ph_bill_cat: 'Select Category', ph_bill_name: 'Bill name (e.g., Mortgage)',
-        ph_emergency_goal: 'Goal (e.g., Emergency Fund)', ph_emergency_amt: 'Amount to save',
-        ph_401k_goal: 'Goal (e.g., Monthly Contribution)', ph_roth_goal: 'Goal (e.g., Annual Contribution)',
-        ph_savings_goal: 'Goal (e.g., Vacation, New Car)',
-        advisor_title: '💡 Savings Advisor', advisor_sub: 'Personalized insights to help you save smarter',
-        spending_title: '📈 Spending Analysis', spending_sub: 'See where your money goes across every time period',
-        pricing_title: 'Choose Your Plan', pricing_sub: 'Select the perfect plan for your financial journey',
-        about_title: 'About Budget Manager',
-        contact_title: 'Contact Us', contact_sub: "Have questions, feedback, or suggestions? We'd love to hear from you!",
-        login_title: 'Welcome Back', login_sub: 'Login to manage your budget',
-        register_title: 'Create Account', register_sub: 'Start your financial journey today',
-        btn_login: 'Login', btn_register: 'Create Account',
-        btn_send: 'Send Message', btn_delete: 'Delete',
-    },
-    ar: {
-        nav_home: 'الرئيسية', nav_budget: 'ميزانيتي', nav_advisor: 'مستشار الادخار',
-        nav_spending: 'تحليل الإنفاق', nav_pricing: 'الأسعار', nav_about: 'عن التطبيق',
-        nav_contact: 'تواصل معنا', nav_login: 'تسجيل الدخول', nav_signup: 'إنشاء حساب', nav_logout: 'تسجيل الخروج',
-        hero_title: 'تحكم في أموالك',
-        hero_sub: 'أدر دخلك، تتبع نفقاتك حسب الفئة، وحقق أهداف ادخارك مع مدير الميزانية السهل الاستخدام.',
-        hero_cta: 'ابدأ الآن',
-        feat_income: 'تتبع الدخل', feat_income_sub: 'راقب جميع مصادر دخلك في مكان واحد مع تصنيفات منظمة',
-        feat_expenses: 'تصنيف النفقات', feat_expenses_sub: 'نظّم الفواتير حسب الفئة: السكن، الغذاء، المواصلات، والمزيد',
-        feat_savings: 'أهداف الادخار', feat_savings_sub: 'خطط وتتبع أهداف الادخار الطارئة والمنتظمة',
-        budget_title: 'ميزانيتي', budget_sub: 'أدر أموالك',
-        btn_monthly: '📅 عرض شهري', btn_yearly: '📆 عرض سنوي',
-        export_csv: '⬇️ تصدير CSV', export_pdf: '📄 تصدير PDF',
-        lbl_total_income: 'إجمالي الدخل', lbl_total_bills: 'إجمالي الفواتير',
-        lbl_total_savings: 'إجمالي المدخرات', lbl_available: 'المتاح للادخار',
-        lbl_emergency: 'مدخرات الطوارئ', lbl_401k: 'تقاعد 401(k)', lbl_roth: 'روث IRA', lbl_regular: 'مدخرات منتظمة',
-        sec_income: 'مصادر الدخل', sec_bills: 'الفواتير والنفقات',
-        sec_emergency: '💰 مدخرات الطوارئ', sec_401k: '🏦 تقاعد 401(k)',
-        sec_roth: '💎 روث IRA', sec_regular: '🎯 مدخرات منتظمة',
-        btn_add_income: 'إضافة دخل', btn_add_bill: 'إضافة نفقة',
-        btn_add_emergency: 'إضافة هدف طوارئ', btn_add_401k: 'إضافة هدف 401(k)',
-        btn_add_roth: 'إضافة هدف روث IRA', btn_add_savings: 'إضافة هدف ادخار',
-        ph_income_cat: 'اختر الفئة', ph_income_src: 'اسم المصدر (مثال: الراتب)', ph_amount: 'المبلغ',
-        ph_bill_cat: 'اختر الفئة', ph_bill_name: 'اسم الفاتورة (مثال: الإيجار)',
-        ph_emergency_goal: 'الهدف (مثال: صندوق الطوارئ)', ph_emergency_amt: 'المبلغ المراد ادخاره',
-        ph_401k_goal: 'الهدف (مثال: مساهمة شهرية)', ph_roth_goal: 'الهدف (مثال: مساهمة سنوية)',
-        ph_savings_goal: 'الهدف (مثال: إجازة، سيارة جديدة)',
-        advisor_title: '💡 مستشار الادخار', advisor_sub: 'رؤى مخصصة لمساعدتك على الادخار بذكاء',
-        spending_title: '📈 تحليل الإنفاق', spending_sub: 'اعرف أين تذهب أموالك في كل فترة زمنية',
-        pricing_title: 'اختر خطتك', pricing_sub: 'اختر الخطة المثالية لرحلتك المالية',
-        about_title: 'عن مدير الميزانية',
-        contact_title: 'تواصل معنا', contact_sub: 'هل لديك أسئلة أو اقتراحات؟ يسعدنا سماعك!',
-        login_title: 'مرحباً بعودتك', login_sub: 'سجّل دخولك لإدارة ميزانيتك',
-        register_title: 'إنشاء حساب', register_sub: 'ابدأ رحلتك المالية اليوم',
-        btn_login: 'تسجيل الدخول', btn_register: 'إنشاء الحساب',
-        btn_send: 'إرسال الرسالة', btn_delete: 'حذف',
-    },
-    es: {
-        nav_home: 'Inicio', nav_budget: 'Mi Presupuesto', nav_advisor: 'Asesor de Ahorro',
-        nav_spending: 'Análisis de Gastos', nav_pricing: 'Precios', nav_about: 'Acerca de',
-        nav_contact: 'Contacto', nav_login: 'Iniciar Sesión', nav_signup: 'Registrarse', nav_logout: 'Cerrar Sesión',
-        hero_title: 'Toma el Control de tus Finanzas',
-        hero_sub: 'Gestiona tus ingresos, rastrea gastos por categoría y alcanza tus metas de ahorro con nuestro gestor de presupuesto.',
-        hero_cta: 'Comenzar',
-        feat_income: 'Rastrear Ingresos', feat_income_sub: 'Monitorea todas tus fuentes de ingresos en un solo lugar con categorías organizadas',
-        feat_expenses: 'Categorizar Gastos', feat_expenses_sub: 'Organiza facturas por categoría: vivienda, comida, transporte y más',
-        feat_savings: 'Metas de Ahorro', feat_savings_sub: 'Planifica y rastrea tus objetivos de ahorro de emergencia y regulares',
-        budget_title: 'Mi Presupuesto', budget_sub: 'Gestiona tus finanzas',
-        btn_monthly: '📅 Vista Mensual', btn_yearly: '📆 Vista Anual',
-        export_csv: '⬇️ Exportar CSV', export_pdf: '📄 Exportar PDF',
-        lbl_total_income: 'Ingresos Totales', lbl_total_bills: 'Facturas Totales',
-        lbl_total_savings: 'Ahorros Totales', lbl_available: 'Disponible para Ahorrar',
-        lbl_emergency: 'Ahorro de Emergencia', lbl_401k: '401(k)', lbl_roth: 'Roth IRA', lbl_regular: 'Ahorro Regular',
-        sec_income: 'Fuentes de Ingresos', sec_bills: 'Facturas y Gastos',
-        sec_emergency: '💰 Ahorro de Emergencia', sec_401k: '🏦 Jubilación 401(k)',
-        sec_roth: '💎 Roth IRA', sec_regular: '🎯 Ahorro Regular',
-        btn_add_income: 'Agregar Ingreso', btn_add_bill: 'Agregar Gasto',
-        btn_add_emergency: 'Agregar Meta de Emergencia', btn_add_401k: 'Agregar Meta 401(k)',
-        btn_add_roth: 'Agregar Meta Roth IRA', btn_add_savings: 'Agregar Meta de Ahorro',
-        ph_income_cat: 'Seleccionar Categoría', ph_income_src: 'Nombre de fuente (ej. Trabajo Principal)', ph_amount: 'Monto',
-        ph_bill_cat: 'Seleccionar Categoría', ph_bill_name: 'Nombre de factura (ej. Hipoteca)',
-        ph_emergency_goal: 'Meta (ej. Fondo de Emergencia)', ph_emergency_amt: 'Monto a ahorrar',
-        ph_401k_goal: 'Meta (ej. Contribución Mensual)', ph_roth_goal: 'Meta (ej. Contribución Anual)',
-        ph_savings_goal: 'Meta (ej. Vacaciones, Auto Nuevo)',
-        advisor_title: '💡 Asesor de Ahorro', advisor_sub: 'Perspectivas personalizadas para ayudarte a ahorrar mejor',
-        spending_title: '📈 Análisis de Gastos', spending_sub: 'Ve a dónde va tu dinero en cada período de tiempo',
-        pricing_title: 'Elige tu Plan', pricing_sub: 'Selecciona el plan perfecto para tu viaje financiero',
-        about_title: 'Acerca del Gestor de Presupuesto',
-        contact_title: 'Contáctanos', contact_sub: '¿Tienes preguntas o sugerencias? ¡Nos encantaría escucharte!',
-        login_title: 'Bienvenido de Nuevo', login_sub: 'Inicia sesión para gestionar tu presupuesto',
-        register_title: 'Crear Cuenta', register_sub: 'Comienza tu viaje financiero hoy',
-        btn_login: 'Iniciar Sesión', btn_register: 'Crear Cuenta',
-        btn_send: 'Enviar Mensaje', btn_delete: 'Eliminar',
-    }
-};
-
-let currentLang = localStorage.getItem('lang') || 'en';
-
-function setLang(lang) {
-    currentLang = lang;
-    localStorage.setItem('lang', lang);
-    document.documentElement.lang = lang;
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (translations[lang][key]) el.textContent = translations[lang][key];
-    });
-    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
-        const key = el.getAttribute('data-i18n-ph');
-        if (translations[lang][key]) el.placeholder = translations[lang][key];
-    });
-    // Update active lang button
-    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-    const btn = document.getElementById('lang-' + lang);
-    if (btn) btn.classList.add('active');
-    // Re-render to update dynamic content
-    renderAll();
-}
-
-function loadLang() { setLang(currentLang); }
 
 // ===== INIT =====
 loadData();
 loadTheme();
 checkAuth();
 loadLang();
+
 
 
 
