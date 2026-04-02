@@ -1,592 +1,419 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Budget Manager</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Budget Manager</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">💰 Budget Manager</div>
-            <ul class="nav-menu">
-                <li class="active"><a href="#home" onclick="showSection('home')" data-i18n="nav_home">Home</a></li>
-                <li><a href="#budget" onclick="showSection('budget')" data-i18n="nav_budget">My Budget</a></li>
-                <li><a href="#advisor" onclick="showSection('advisor')" data-i18n="nav_advisor">Savings Advisor</a></li>
-                <li><a href="#spending" onclick="showSection('spending')" data-i18n="nav_spending">Spending Analysis</a></li>
-                <li><a href="#pricing" onclick="showSection('pricing')" data-i18n="nav_pricing">Pricing</a></li>
-                <li><a href="#about" onclick="showSection('about')" data-i18n="nav_about">About</a></li>
-                <li><a href="#contact" onclick="showSection('contact')" data-i18n="nav_contact">Contact</a></li>
-            </ul>
-            <div class="auth-buttons" id="authButtons">
-                <button onclick="showSection('login')" class="login-btn" data-i18n="nav_login">Login</button>
-                <button onclick="showSection('register')" class="register-btn" data-i18n="nav_signup">Sign Up</button>
-            </div>
-            <div class="user-menu" id="userMenu" style="display: none;">
-                <span class="user-name" id="userName"></span>
-                <button onclick="logout()" class="logout-btn" data-i18n="nav_logout">Logout</button>
-            </div>
-            <div class="lang-switcher">
-                <button onclick="setLang('en')" class="lang-btn" id="lang-en">🇺🇸 EN</button>
-                <button onclick="setLang('ar')" class="lang-btn" id="lang-ar">🇸🇦 AR</button>
-                <button onclick="setLang('es')" class="lang-btn" id="lang-es">🇪🇸 ES</button>
-            </div>
-            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                <span class="sun-icon">☀️</span>
-                <span class="moon-icon">🌙</span>
-            </button>
-            <div class="lang-selector">
-                <select id="langSelect" onchange="setLanguage(this.value)">
-                    <option value="en">🇺🇸 EN</option>
-                    <option value="es">🇪🇸 ES</option>
-                    <option value="ar">🇸🇦 AR</option>
-                </select>
-            </div>
-            <div class="hamburger" onclick="toggleMenu()">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-    </nav>
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="logo">💰 Budget Manager</div>
 
-    <div class="container">
-        <section id="home" class="page-section active">
-            <header>
-                <h1>💰 Budget Manager</h1>
-                <p>Track your income, bills, and savings</p>
-            </header>
-            <div class="hero">
-                <h2 data-i18n="hero_title">Take Control of Your Finances</h2>
-                <p data-i18n="hero_sub">Manage your income, track expenses by category, and reach your savings goals with our easy-to-use budget manager.</p>
-                <button onclick="showSection('budget')" class="cta-button" data-i18n="hero_cta">Get Started</button>
-            </div>
-            <div class="features">
-                <div class="feature-card" onclick="goToSection('income-section')" style="cursor: pointer;">
-                    <span class="feature-icon">📊</span>
-                    <h3 data-i18n="feat_income">Track Income</h3>
-                    <p data-i18n="feat_income_sub">Monitor all your income sources in one place with organized categories</p>
-                </div>
-                <div class="feature-card" onclick="goToSection('bills-section')" style="cursor: pointer;">
-                    <span class="feature-icon">💳</span>
-                    <h3 data-i18n="feat_expenses">Categorize Expenses</h3>
-                    <p data-i18n="feat_expenses_sub">Organize bills by category: housing, food, transportation, and more</p>
-                </div>
-                <div class="feature-card" onclick="goToSection('emergency-section')" style="cursor: pointer;">
-                    <span class="feature-icon">🎯</span>
-                    <h3 data-i18n="feat_savings">Set Savings Goals</h3>
-                    <p data-i18n="feat_savings_sub">Plan and track your emergency and regular savings objectives</p>
-                </div>
-            </div>
-        </section>
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
 
-        <section id="budget" class="page-section">
-            <header>
-                <h1 data-i18n="budget_title">My Budget</h1>
-                <p data-i18n="budget_sub">Manage your finances</p>
-                <button id="viewModeBtn" onclick="toggleViewMode()" class="view-mode-toggle" data-i18n="btn_monthly">📅 Monthly View</button>
-                <div class="export-buttons">
-                    <button onclick="exportCSV()" class="export-btn csv-btn" data-i18n="export_csv">⬇️ Export CSV</button>
-                    <button onclick="exportPDF()" class="export-btn pdf-btn" data-i18n="export_pdf">📄 Export PDF</button>
-                </div>
-            </header>
+    <ul class="nav-menu">
+      <li class="active"><a href="#home" onclick="showSection('home')" data-i18n="nav_home">Home</a></li>
+      <li><a href="#budget" onclick="showSection('budget')" data-i18n="nav_budget">My Budget</a></li>
+      <li><a href="#advisor" onclick="showSection('advisor')" data-i18n="nav_advisor">Savings Advisor</a></li>
+      <li><a href="#spending" onclick="showSection('spending')" data-i18n="nav_spending">Spending Analysis</a></li>
+      <li><a href="#pricing" onclick="showSection('pricing')" data-i18n="nav_pricing">Pricing</a></li>
+      <li><a href="#about" onclick="showSection('about')" data-i18n="nav_about">About</a></li>
+      <li><a href="#contact" onclick="showSection('contact')" data-i18n="nav_contact">Contact</a></li>
+    </ul>
 
-        <div class="summary-cards">
-            <div class="card income-card">
-                <h3 data-i18n="lbl_total_income">Total Income</h3>
-                <p class="amount" id="totalIncome">$0.00</p>
-            </div>
-            <div class="card bills-card">
-                <h3 data-i18n="lbl_total_bills">Total Bills</h3>
-                <p class="amount" id="totalBills">$0.00</p>
-            </div>
-            <div class="card total-savings-card">
-                <h3 data-i18n="lbl_total_savings">Total Savings</h3>
-                <p class="amount" id="totalAllSavings">$0.00</p>
-            </div>
-            <div class="card available-card">
-                <h3 data-i18n="lbl_available">Available to Save</h3>
-                <p class="amount" id="availableSavings">$0.00</p>
-            </div>
-        </div>
+    <div class="nav-right">
+      <div class="lang-switcher">
+        <button id="lang-en" class="lang-btn" onclick="setLang('en')">EN</button>
+        <button id="lang-ar" class="lang-btn" onclick="setLang('ar')">AR</button>
+        <button id="lang-es" class="lang-btn" onclick="setLang('es')">ES</button>
+      </div>
 
-        <div class="summary-cards savings-breakdown">
-            <div class="card savings-card">
-                <h3 data-i18n="lbl_emergency">Emergency Savings</h3>
-                <p class="amount" id="emergencySavings">$0.00</p>
-            </div>
-            <div class="card retirement-card">
-                <h3 data-i18n="lbl_401k">401(k)</h3>
-                <p class="amount" id="total401k">$0.00</p>
-            </div>
-            <div class="card retirement-card">
-                <h3 data-i18n="lbl_roth">Roth IRA</h3>
-                <p class="amount" id="totalRothIRA">$0.00</p>
-            </div>
-            <div class="card savings-card">
-                <h3 data-i18n="lbl_regular">Regular Savings</h3>
-                <p class="amount" id="regularSavings">$0.00</p>
-            </div>
-        </div>
+      <button class="theme-btn" onclick="toggleTheme()">🌙</button>
 
-        <div class="sections">
-            <section class="income-section" id="income-section">
-                <h2 data-i18n="sec_income">Income Sources</h2>
-                <div class="input-group">
-                    <select id="incomeCategory">
-                        <option value="" data-i18n-ph="ph_income_cat">Select Category</option>
-                        <option value="Salary">💼 Salary</option>
-                        <option value="Side Hustle">🚀 Side Hustle</option>
-                        <option value="Freelance">💻 Freelance</option>
-                        <option value="Business">🏢 Business</option>
-                        <option value="Investment">📈 Investment</option>
-                        <option value="Rental">🏠 Rental Income</option>
-                        <option value="Pension">👴 Pension</option>
-                        <option value="Other">💰 Other</option>
-                    </select>
-                    <input type="text" id="incomeSource" placeholder="Source name (e.g., Main Job)" data-i18n-ph="ph_income_src">
-                    <input type="number" id="incomeAmount" placeholder="Amount" data-i18n-ph="ph_amount" step="0.01">
-                    <button onclick="addIncome()" data-i18n="btn_add_income">Add Income</button>
-                </div>
-                <ul id="incomeList" class="item-list"></ul>
-            </section>
+      <div id="authButtons" class="auth-buttons">
+        <button onclick="showSection('login')" data-i18n="nav_login">Login</button>
+        <button onclick="showSection('register')" class="signup-btn" data-i18n="nav_signup">Sign Up</button>
+      </div>
 
-            <section class="bills-section" id="bills-section">
-                <h2 data-i18n="sec_bills">Bills & Expenses</h2>
-                <div class="input-group">
-                    <select id="billCategory">
-                        <option value="" data-i18n-ph="ph_bill_cat">Select Category</option>
-                        <option value="Housing">🏠 Housing</option>
-                        <option value="Utilities">💡 Utilities</option>
-                        <option value="Transportation">🚗 Transportation</option>
-                        <option value="Food">🍔 Food</option>
-                        <option value="Insurance">🛡️ Insurance</option>
-                        <option value="Debt">💳 Debt Payments</option>
-                        <option value="Entertainment">🎬 Entertainment</option>
-                        <option value="Healthcare">⚕️ Healthcare</option>
-                        <option value="Personal">👤 Personal Care</option>
-                        <option value="Other">📌 Other</option>
-                    </select>
-                    <input type="text" id="billName" placeholder="Bill name (e.g., Mortgage)" data-i18n-ph="ph_bill_name">
-                    <input type="number" id="billAmount" placeholder="Amount" data-i18n-ph="ph_amount" step="0.01">
-                    <button onclick="addBill()" data-i18n="btn_add_bill">Add Expense</button>
-                </div>
-                <ul id="billsList" class="item-list"></ul>
-            </section>
-
-            <section class="savings-section" id="emergency-section">
-                <h2 data-i18n="sec_emergency">💰 Emergency Savings</h2>
-                <div class="input-group">
-                    <input type="text" id="emergencyGoal" placeholder="Goal (e.g., Emergency Fund, Medical)" data-i18n-ph="ph_emergency_goal">
-                    <input type="number" id="emergencyAmount" placeholder="Amount to save" data-i18n-ph="ph_emergency_amt" step="0.01">
-                    <button onclick="addEmergencySavings()" data-i18n="btn_add_emergency">Add Emergency Goal</button>
-                </div>
-                <ul id="emergencySavingsList" class="item-list"></ul>
-            </section>
-
-            <section class="savings-section">
-                <h2 data-i18n="sec_401k">🏦 401(k) Retirement</h2>
-                <div class="input-group">
-                    <input type="text" id="401kGoal" placeholder="Goal (e.g., Monthly Contribution)" data-i18n-ph="ph_401k_goal">
-                    <input type="number" id="401kAmount" placeholder="Amount to save" data-i18n-ph="ph_emergency_amt" step="0.01">
-                    <button onclick="add401k()" data-i18n="btn_add_401k">Add 401(k) Goal</button>
-                </div>
-                <ul id="401kList" class="item-list"></ul>
-            </section>
-
-            <section class="savings-section">
-                <h2 data-i18n="sec_roth">💎 Roth IRA</h2>
-                <div class="input-group">
-                    <input type="text" id="rothGoal" placeholder="Goal (e.g., Annual Contribution)" data-i18n-ph="ph_roth_goal">
-                    <input type="number" id="rothAmount" placeholder="Amount to save" data-i18n-ph="ph_emergency_amt" step="0.01">
-                    <button onclick="addRothIRA()" data-i18n="btn_add_roth">Add Roth IRA Goal</button>
-                </div>
-                <ul id="rothIRAList" class="item-list"></ul>
-            </section>
-
-            <section class="savings-section">
-                <h2 data-i18n="sec_regular">🎯 Regular Savings</h2>
-                <div class="input-group">
-                    <input type="text" id="savingsGoal" placeholder="Goal (e.g., Vacation, New Car)" data-i18n-ph="ph_savings_goal">
-                    <input type="number" id="savingsAmount" placeholder="Amount to save" data-i18n-ph="ph_emergency_amt" step="0.01">
-                    <button onclick="addSavings()" data-i18n="btn_add_savings">Add Savings Goal</button>
-                </div>
-                <ul id="savingsList" class="item-list"></ul>
-            </section>
-        </div>
-        </section>
-
-        <section id="advisor" class="page-section">
-            <div class="advisor-container">
-                <header>
-                    <h1 data-i18n="advisor_title">💡 Savings Advisor</h1>
-                    <p data-i18n="advisor_sub">Personalized insights to help you save smarter</p>
-                </header>
-
-                <div class="health-score-card">
-                    <div class="score-circle" id="scoreCircle">
-                        <span id="healthScore">--</span>
-                        <small>Budget Score</small>
-                    </div>
-                    <div class="score-info">
-                        <h2 id="scoreLabel">Add your budget data to get started</h2>
-                        <p id="scoreDescription">Enter your income, expenses, and savings in My Budget to receive your personalized financial health score and tips.</p>
-                    </div>
-                </div>
-
-                <div class="advisor-grid">
-                    <div class="advisor-card">
-                        <h3>📊 Spending Breakdown</h3>
-                        <div id="spendingBreakdown">
-                            <p class="empty-state">No data yet. Add expenses in My Budget.</p>
-                        </div>
-                    </div>
-
-                    <div class="advisor-card">
-                        <h3>🎯 Savings Rate</h3>
-                        <div id="savingsRate">
-                            <p class="empty-state">No data yet. Add income and savings in My Budget.</p>
-                        </div>
-                    </div>
-
-                    <div class="advisor-card">
-                        <h3>⚠️ Budget Alerts</h3>
-                        <div id="budgetAlerts">
-                            <p class="empty-state">No alerts. Add your budget data to get alerts.</p>
-                        </div>
-                    </div>
-
-                    <div class="advisor-card">
-                        <h3>💰 50/30/20 Rule</h3>
-                        <div id="budgetRule">
-                            <p class="empty-state">No data yet. The 50/30/20 rule helps split income into needs, wants, and savings.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tips-section">
-                    <h2>💡 Smart Saving Tips</h2>
-                    <div id="savingsTips" class="tips-grid"></div>
-                </div>
-
-                <div class="goals-tracker">
-                    <h2>🏆 Savings Goal Tracker</h2>
-                    <div id="goalsProgress"></div>
-                    <div class="goal-form">
-                        <h3>Add a Savings Goal</h3>
-                        <div class="input-group">
-                            <input type="text" id="goalName" placeholder="Goal name (e.g., New Car)">
-                            <input type="number" id="goalTarget" placeholder="Target amount ($)">
-                            <input type="number" id="goalCurrent" placeholder="Amount saved so far ($)">
-                            <button onclick="addGoalTracker()">Track Goal</button>
-                        </div>
-                        <ul id="goalsList" class="item-list"></ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="spending" class="page-section">
-            <div class="spending-container">
-                <header>
-                    <h1 data-i18n="spending_title">📈 Spending Analysis</h1>
-                    <p data-i18n="spending_sub">See where your money goes across every time period</p>
-                </header>
-
-                <div class="period-tabs">
-                    <button class="period-tab active" onclick="switchPeriod('weekly', this)">Weekly</button>
-                    <button class="period-tab" onclick="switchPeriod('monthly', this)">Monthly</button>
-                    <button class="period-tab" onclick="switchPeriod('quarterly', this)">Quarterly</button>
-                    <button class="period-tab" onclick="switchPeriod('yearly', this)">Yearly</button>
-                </div>
-
-                <div class="spending-summary-row" id="spendingSummaryRow"></div>
-
-                <div class="spending-grid">
-                    <div class="spending-analysis-card wide">
-                        <h3>💸 Spending by Category</h3>
-                        <div id="categoryChart"></div>
-                    </div>
-
-                    <div class="spending-analysis-card">
-                        <h3>📊 Income vs Expenses vs Savings</h3>
-                        <div id="incomeExpenseChart"></div>
-                    </div>
-
-                    <div class="spending-analysis-card">
-                        <h3>🔍 Detailed Breakdown</h3>
-                        <div id="detailedBreakdown"></div>
-                    </div>
-                </div>
-
-                <div class="spending-analysis-card" style="margin-top:20px;">
-                    <h3>📅 Period Comparison</h3>
-                    <div class="comparison-grid" id="periodComparison"></div>
-                </div>
-            </div>
-        </section>
-
-        <section id="pricing" class="page-section">
-            <div class="pricing-container">
-                <header>
-                    <h1 data-i18n="pricing_title">Choose Your Plan</h1>
-                    <p data-i18n="pricing_sub">Select the perfect plan for your financial journey</p>
-                </header>
-
-                <div class="pricing-cards">
-                    <div class="pricing-card">
-                        <div class="plan-badge">Free</div>
-                        <h2>Basic</h2>
-                        <div class="price">
-                            <span class="amount">$0</span>
-                            <span class="period">/month</span>
-                        </div>
-                        <ul class="features">
-                            <li>✓ Track income & expenses</li>
-                            <li>✓ Basic categorization</li>
-                            <li>✓ Monthly view</li>
-                            <li>✓ Local data storage</li>
-                            <li>✗ Yearly projections</li>
-                            <li>✗ Cloud sync</li>
-                            <li>✗ Export reports</li>
-                            <li>✗ Priority support</li>
-                        </ul>
-                        <button class="plan-button free-button" onclick="selectPlan('free')">Get Started Free</button>
-                    </div>
-
-                    <div class="pricing-card featured">
-                        <div class="plan-badge popular">Most Popular</div>
-                        <h2>Pro</h2>
-                        <div class="price">
-                            <span class="amount">$3.99</span>
-                            <span class="period">/month</span>
-                        </div>
-                        <ul class="features">
-                            <li>✓ Everything in Basic</li>
-                            <li>✓ Monthly & yearly views</li>
-                            <li>✓ Cloud sync across devices</li>
-                            <li>✓ Export to PDF/Excel</li>
-                            <li>✓ Budget insights & analytics</li>
-                            <li>✓ Unlimited categories</li>
-                            <li>✓ Email support</li>
-                            <li>✗ Financial advisor access</li>
-                        </ul>
-                        <button class="plan-button pro-button" onclick="selectPlan('pro')">Start Pro Trial</button>
-                    </div>
-
-                    <div class="pricing-card">
-                        <div class="plan-badge">Premium</div>
-                        <h2>Enterprise</h2>
-                        <div class="price">
-                            <span class="amount">$9.99</span>
-                            <span class="period">/month</span>
-                        </div>
-                        <ul class="features">
-                            <li>✓ Everything in Pro</li>
-                            <li>✓ Multi-user accounts</li>
-                            <li>✓ Financial advisor consultation</li>
-                            <li>✓ Custom reports & dashboards</li>
-                            <li>✓ Investment tracking</li>
-                            <li>✓ Tax planning tools</li>
-                            <li>✓ Priority 24/7 support</li>
-                            <li>✓ API access</li>
-                        </ul>
-                        <button class="plan-button enterprise-button" onclick="selectPlan('enterprise')">Contact Sales</button>
-                    </div>
-                </div>
-
-                <div class="payment-methods">
-                    <h3>We Accept</h3>
-                    <div class="payment-icons">
-                        <span>💳 Credit Card</span>
-                        <span>🏦 Bank Transfer</span>
-                        <span>💰 PayPal</span>
-                        <span>🍎 Apple Pay</span>
-                        <span>📱 Google Pay</span>
-                    </div>
-                </div>
-
-                <div class="faq-section">
-                    <h2>Frequently Asked Questions</h2>
-                    <div class="faq-item">
-                        <h3>Can I cancel anytime?</h3>
-                        <p>Yes! You can cancel your subscription at any time. No questions asked.</p>
-                    </div>
-                    <div class="faq-item">
-                        <h3>Is there a free trial?</h3>
-                        <p>Pro and Enterprise plans come with a 14-day free trial. No credit card required.</p>
-                    </div>
-                    <div class="faq-item">
-                        <h3>How secure is my data?</h3>
-                        <p>We use bank-level encryption to protect your financial data. Your information is always secure.</p>
-                    </div>
-                    <div class="faq-item">
-                        <h3>Can I upgrade or downgrade?</h3>
-                        <p>Absolutely! You can change your plan at any time from your account settings.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="login" class="page-section">
-            <div class="auth-container">
-                <div class="auth-card">
-                    <h1 data-i18n="login_title">Welcome Back</h1>
-                    <p data-i18n="login_sub">Login to manage your budget</p>
-                    
-                    <form class="auth-form" onsubmit="handleLogin(event)">
-                        <div class="form-group">
-                            <label for="loginEmail">Email</label>
-                            <input type="email" id="loginEmail" required placeholder="your@email.com">
-                        </div>
-                        <div class="form-group">
-                            <label for="loginPassword">Password</label>
-                            <input type="password" id="loginPassword" required placeholder="Enter your password">
-                        </div>
-                        <div class="form-options">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="rememberMe">
-                                <span>Remember me</span>
-                            </label>
-                            <a href="#" class="forgot-link">Forgot password?</a>
-                        </div>
-                        <button type="submit" class="auth-submit-btn">Login</button>
-                    </form>
-                    
-                    <div class="auth-divider">
-                        <span>OR</span>
-                    </div>
-                    
-                    <div class="social-login">
-                        <button class="social-btn google-btn" onclick="socialLogin('google')">
-                            <span>🔍</span> Continue with Google
-                        </button>
-                        <button class="social-btn facebook-btn" onclick="socialLogin('facebook')">
-                            <span>📘</span> Continue with Facebook
-                        </button>
-                    </div>
-                    
-                    <p class="auth-switch">
-                        Don't have an account? <a href="#register" onclick="showSection('register')">Sign up</a>
-                    </p>
-                </div>
-            </div>
-        </section>
-
-        <section id="register" class="page-section">
-            <div class="auth-container">
-                <div class="auth-card">
-                    <h1 data-i18n="register_title">Create Account</h1>
-                    <p data-i18n="register_sub">Start your financial journey today</p>
-                    
-                    <form class="auth-form" onsubmit="handleRegister(event)">
-                        <div class="form-group">
-                            <label for="registerName">Full Name</label>
-                            <input type="text" id="registerName" required placeholder="John Doe">
-                        </div>
-                        <div class="form-group">
-                            <label for="registerEmail">Email</label>
-                            <input type="email" id="registerEmail" required placeholder="your@email.com">
-                        </div>
-                        <div class="form-group">
-                            <label for="registerPassword">Password</label>
-                            <input type="password" id="registerPassword" required placeholder="Create a password" minlength="6">
-                        </div>
-                        <div class="form-group">
-                            <label for="confirmPassword">Confirm Password</label>
-                            <input type="password" id="confirmPassword" required placeholder="Confirm your password">
-                        </div>
-                        <div class="form-options">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="agreeTerms" required>
-                                <span>I agree to the <a href="#" class="terms-link">Terms & Conditions</a></span>
-                            </label>
-                        </div>
-                        <button type="submit" class="auth-submit-btn">Create Account</button>
-                    </form>
-                    
-                    <div class="auth-divider">
-                        <span>OR</span>
-                    </div>
-                    
-                    <div class="social-login">
-                        <button class="social-btn google-btn" onclick="socialLogin('google')">
-                            <span>🔍</span> Sign up with Google
-                        </button>
-                        <button class="social-btn facebook-btn" onclick="socialLogin('facebook')">
-                            <span>📘</span> Sign up with Facebook
-                        </button>
-                    </div>
-                    
-                    <p class="auth-switch">
-                        Already have an account? <a href="#login" onclick="showSection('login')">Login</a>
-                    </p>
-                </div>
-            </div>
-        </section>
-
-        <section id="about" class="page-section">
-            <div class="content-page">
-                <h1 data-i18n="about_title">About Budget Manager</h1>
-                <p>Budget Manager is a simple, intuitive tool designed to help you take control of your personal finances. Whether you're trying to save for a big purchase, pay off debt, or just understand where your money goes each month, we're here to help.</p>
-                
-                <h2>Why Budget Manager?</h2>
-                <ul class="info-list">
-                    <li><strong>Easy to Use:</strong> No complicated setup or learning curve</li>
-                    <li><strong>Organized Categories:</strong> Track expenses by housing, food, transportation, and more</li>
-                    <li><strong>Privacy First:</strong> All your data stays in your browser - we don't store anything on servers</li>
-                    <li><strong>Free Forever:</strong> No subscriptions, no hidden fees</li>
-                </ul>
-
-                <h2>How It Works</h2>
-                <ol class="info-list">
-                    <li>Add your income sources (salary, freelance work, etc.)</li>
-                    <li>Enter your bills and expenses by category</li>
-                    <li>Set your savings goals</li>
-                    <li>Watch your budget balance automatically</li>
-                </ol>
-            </div>
-        </section>
-
-        <section id="contact" class="page-section">
-            <div class="content-page">
-                <h1 data-i18n="contact_title">Contact Us</h1>
-                <p data-i18n="contact_sub">Have questions, feedback, or suggestions? We'd love to hear from you!</p>
-                
-                <form class="contact-form" onsubmit="handleContact(event)">
-                    <div class="form-group">
-                        <label for="contactName">Name</label>
-                        <input type="text" id="contactName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="contactEmail">Email</label>
-                        <input type="email" id="contactEmail" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="contactMessage">Message</label>
-                        <textarea id="contactMessage" rows="5" required></textarea>
-                    </div>
-                    <button type="submit">Send Message</button>
-                </form>
-
-                <div class="contact-info">
-                    <h2>Other Ways to Reach Us</h2>
-                    <p>📧 Email: support@budgetmanager.com</p>
-                    <p>📱 Phone: (555) 123-4567</p>
-                    <p>🕐 Hours: Monday - Friday, 9am - 5pm EST</p>
-                </div>
-            </div>
-        </section>
+      <div id="userMenu" class="user-menu" style="display:none;">
+        <span id="userName"></span>
+        <button onclick="logout()" data-i18n="nav_logout">Logout</button>
+      </div>
     </div>
+  </header>
 
-    <footer>
-        <p>&copy; 2024 Budget Manager. All rights reserved.</p>
-        <p>Made with ❤️ to help you achieve financial freedom</p>
-    </footer>
+  <main>
+    <!-- HOME -->
+    <section id="home" class="page-section active hero-section">
+      <div class="hero-content">
+        <h1 data-i18n="hero_title">Take Control of Your Finances</h1>
+        <p data-i18n="hero_sub">Manage your income, track expenses by category, and reach your savings goals with our easy-to-use budget manager.</p>
+        <button class="cta-btn" onclick="showSection('budget')" data-i18n="hero_cta">Get Started</button>
+      </div>
 
-    <script src="script.js"></script>
+      <div class="features-grid">
+        <div class="feature-card">
+          <h3 data-i18n="feat_income">Track Income</h3>
+          <p data-i18n="feat_income_sub">Monitor all your income sources in one place with organized categories</p>
+        </div>
+        <div class="feature-card">
+          <h3 data-i18n="feat_expenses">Categorize Expenses</h3>
+          <p data-i18n="feat_expenses_sub">Organize bills by category: housing, food, transportation, and more</p>
+        </div>
+        <div class="feature-card">
+          <h3 data-i18n="feat_savings">Set Savings Goals</h3>
+          <p data-i18n="feat_savings_sub">Plan and track your emergency and regular savings objectives</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- BUDGET -->
+    <section id="budget" class="page-section">
+      <div class="section-header">
+        <h2 data-i18n="budget_title">My Budget</h2>
+        <p data-i18n="budget_sub">Manage your finances</p>
+      </div>
+
+      <div class="top-actions">
+        <button id="viewModeBtn" onclick="toggleViewMode()">📅 Monthly View</button>
+        <button onclick="exportCSV()" data-i18n="export_csv">⬇️ Export CSV</button>
+        <button onclick="exportPDF()" data-i18n="export_pdf">📄 Export PDF</button>
+      </div>
+
+      <div class="summary-cards">
+        <div class="summary-card income">
+          <h3 data-i18n="lbl_total_income">Total Income</h3>
+          <p id="totalIncome">$0.00</p>
+        </div>
+        <div class="summary-card bills">
+          <h3 data-i18n="lbl_total_bills">Total Bills</h3>
+          <p id="totalBills">$0.00</p>
+        </div>
+        <div class="summary-card savings">
+          <h3 data-i18n="lbl_total_savings">Total Savings</h3>
+          <p id="totalAllSavings">$0.00</p>
+        </div>
+        <div class="summary-card available">
+          <h3 data-i18n="lbl_available">Available to Save</h3>
+          <p id="availableSavings">$0.00</p>
+        </div>
+      </div>
+
+      <div class="budget-grid">
+        <!-- Income -->
+        <div class="budget-card">
+          <h3 data-i18n="sec_income">Income Sources</h3>
+          <div class="form-row">
+            <select id="incomeCategory">
+              <option value="">Select Category</option>
+              <option>Salary</option>
+              <option>Side Hustle</option>
+              <option>Freelance</option>
+              <option>Business</option>
+              <option>Investment</option>
+              <option>Rental</option>
+              <option>Pension</option>
+              <option>Other</option>
+            </select>
+            <input id="incomeSource" type="text" data-i18n-ph="ph_income_src" placeholder="Source name" />
+            <input id="incomeAmount" type="number" data-i18n-ph="ph_amount" placeholder="Amount" />
+            <button onclick="addIncome()" data-i18n="btn_add_income">Add Income</button>
+          </div>
+          <ul id="incomeList" class="item-list"></ul>
+        </div>
+
+        <!-- Bills -->
+        <div class="budget-card">
+          <h3 data-i18n="sec_bills">Bills & Expenses</h3>
+          <div class="form-row">
+            <select id="billCategory">
+              <option value="">Select Category</option>
+              <option>Housing</option>
+              <option>Utilities</option>
+              <option>Transportation</option>
+              <option>Food</option>
+              <option>Insurance</option>
+              <option>Debt</option>
+              <option>Entertainment</option>
+              <option>Healthcare</option>
+              <option>Personal</option>
+              <option>Other</option>
+            </select>
+            <input id="billName" type="text" data-i18n-ph="ph_bill_name" placeholder="Bill name" />
+            <input id="billAmount" type="number" data-i18n-ph="ph_amount" placeholder="Amount" />
+            <button onclick="addBill()" data-i18n="btn_add_bill">Add Expense</button>
+          </div>
+          <ul id="billsList" class="item-list"></ul>
+        </div>
+      </div>
+
+      <div class="savings-grid">
+        <div class="budget-card savings-section">
+          <h3 data-i18n="sec_emergency">💰 Emergency Savings</h3>
+          <div class="form-row">
+            <input id="emergencyGoal" type="text" data-i18n-ph="ph_emergency_goal" placeholder="Goal" />
+            <input id="emergencyAmount" type="number" data-i18n-ph="ph_emergency_amt" placeholder="Amount" />
+            <button onclick="addEmergencySavings()" data-i18n="btn_add_emergency">Add Emergency Goal</button>
+          </div>
+          <ul id="emergencySavingsList" class="item-list"></ul>
+        </div>
+
+        <div class="budget-card savings-section">
+          <h3 data-i18n="sec_401k">🏦 401(k) Retirement</h3>
+          <div class="form-row">
+            <input id="401kGoal" type="text" data-i18n-ph="ph_401k_goal" placeholder="Goal" />
+            <input id="401kAmount" type="number" data-i18n-ph="ph_amount" placeholder="Amount" />
+            <button onclick="add401k()" data-i18n="btn_add_401k">Add 401(k) Goal</button>
+          </div>
+          <ul id="401kList" class="item-list"></ul>
+        </div>
+
+        <div class="budget-card savings-section">
+          <h3 data-i18n="sec_roth">💎 Roth IRA</h3>
+          <div class="form-row">
+            <input id="rothGoal" type="text" data-i18n-ph="ph_roth_goal" placeholder="Goal" />
+            <input id="rothAmount" type="number" data-i18n-ph="ph_amount" placeholder="Amount" />
+            <button onclick="addRothIRA()" data-i18n="btn_add_roth">Add Roth IRA Goal</button>
+          </div>
+          <ul id="rothIRAList" class="item-list"></ul>
+        </div>
+
+        <div class="budget-card savings-section">
+          <h3 data-i18n="sec_regular">🎯 Regular Savings</h3>
+          <div class="form-row">
+            <input id="savingsGoal" type="text" data-i18n-ph="ph_savings_goal" placeholder="Goal" />
+            <input id="savingsAmount" type="number" data-i18n-ph="ph_amount" placeholder="Amount" />
+            <button onclick="addSavings()" data-i18n="btn_add_savings">Add Savings Goal</button>
+          </div>
+          <ul id="savingsList" class="item-list"></ul>
+        </div>
+      </div>
+
+      <div class="summary-card savings-summary-box">
+        <div><strong>Emergency:</strong> <span id="emergencySavings">$0.00</span></div>
+        <div><strong>401(k):</strong> <span id="total401k">$0.00</span></div>
+        <div><strong>Roth IRA:</strong> <span id="totalRothIRA">$0.00</span></div>
+        <div><strong>Regular:</strong> <span id="regularSavings">$0.00</span></div>
+      </div>
+    </section>
+
+    <!-- ADVISOR -->
+    <section id="advisor" class="page-section">
+      <div class="section-header">
+        <h2 data-i18n="advisor_title">💡 Savings Advisor</h2>
+        <p data-i18n="advisor_sub">Personalized insights to help you save smarter</p>
+      </div>
+
+      <div class="advisor-grid">
+        <div class="budget-card">
+          <div id="scoreCircle" class="score-circle">
+            <span id="healthScore">0</span>
+          </div>
+          <h3 id="scoreLabel">Financial Health</h3>
+          <p id="scoreDescription"></p>
+        </div>
+
+        <div class="budget-card">
+          <h3>Spending Breakdown</h3>
+          <div id="spendingBreakdown"></div>
+        </div>
+
+        <div class="budget-card">
+          <h3>Savings Rate</h3>
+          <div id="savingsRate"></div>
+        </div>
+
+        <div class="budget-card">
+          <h3>Budget Alerts</h3>
+          <div id="budgetAlerts"></div>
+        </div>
+
+        <div class="budget-card">
+          <h3>50 / 30 / 20 Rule</h3>
+          <div id="budgetRule"></div>
+        </div>
+
+        <div class="budget-card">
+          <h3>Savings Tips</h3>
+          <div id="savingsTips"></div>
+        </div>
+
+        <div class="budget-card">
+          <h3>🎯 Goal Tracker</h3>
+          <div class="form-row">
+            <input id="goalName" type="text" placeholder="Goal name" />
+            <input id="goalTarget" type="number" placeholder="Target amount" />
+            <input id="goalCurrent" type="number" placeholder="Current saved" />
+            <button onclick="addGoalTracker()">Add Goal</button>
+          </div>
+          <div id="goalsProgress"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SPENDING -->
+    <section id="spending" class="page-section">
+      <div class="section-header">
+        <h2 data-i18n="spending_title">📈 Spending Analysis</h2>
+        <p data-i18n="spending_sub">See where your money goes across every time period</p>
+      </div>
+
+      <div class="period-tabs">
+        <button class="period-tab active" onclick="switchPeriod('weekly', this)">Weekly</button>
+        <button class="period-tab" onclick="switchPeriod('monthly', this)">Monthly</button>
+        <button class="period-tab" onclick="switchPeriod('quarterly', this)">Quarterly</button>
+        <button class="period-tab" onclick="switchPeriod('yearly', this)">Yearly</button>
+      </div>
+
+      <div id="spendingSummaryRow" class="summary-cards"></div>
+
+      <div class="advisor-grid">
+        <div class="budget-card">
+          <h3>Expenses by Category</h3>
+          <div id="categoryChart"></div>
+        </div>
+
+        <div class="budget-card">
+          <h3>Income vs Expenses</h3>
+          <div id="incomeExpenseChart"></div>
+        </div>
+
+        <div class="budget-card">
+          <h3>Detailed Breakdown</h3>
+          <div id="detailedBreakdown"></div>
+        </div>
+
+        <div class="budget-card">
+          <h3>Period Comparison</h3>
+          <div id="periodComparison"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing" class="page-section">
+      <div class="section-header">
+        <h2 data-i18n="pricing_title">Choose Your Plan</h2>
+        <p data-i18n="pricing_sub">Select the perfect plan for your financial journey</p>
+      </div>
+
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h3>Free</h3>
+          <p class="price">$0</p>
+          <ul>
+            <li>Basic Budget Tracking</li>
+            <li>Expense Categories</li>
+            <li>CSV Export</li>
+          </ul>
+          <button onclick="selectPlan('free')">Get Free</button>
+        </div>
+
+        <div class="pricing-card featured">
+          <h3>Pro</h3>
+          <p class="price">$9.99/mo</p>
+          <ul>
+            <li>Advanced Reports</li>
+            <li>PDF Export</li>
+            <li>Multi-Goal Tracking</li>
+          </ul>
+          <button onclick="selectPlan('pro')">Upgrade</button>
+        </div>
+
+        <div class="pricing-card">
+          <h3>Enterprise</h3>
+          <p class="price">$29.99/mo</p>
+          <ul>
+            <li>Team Access</li>
+            <li>Admin Dashboard</li>
+            <li>Priority Support</li>
+          </ul>
+          <button onclick="selectPlan('enterprise')">Contact Sales</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="page-section">
+      <div class="section-header">
+        <h2 data-i18n="about_title">About Budget Manager</h2>
+      </div>
+      <div class="budget-card">
+        <p>
+          Budget Manager is a modern financial planning app designed to help users
+          organize income, control spending, and build savings goals with confidence.
+        </p>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="page-section">
+      <div class="section-header">
+        <h2 data-i18n="contact_title">Contact Us</h2>
+        <p data-i18n="contact_sub">Have questions, feedback, or suggestions? We'd love to hear from you!</p>
+      </div>
+
+      <div class="budget-card">
+        <form onsubmit="handleContact(event)">
+          <div class="form-row">
+            <input id="contactName" type="text" placeholder="Your Name" required />
+            <input id="contactEmail" type="email" placeholder="Your Email" required />
+          </div>
+          <textarea placeholder="Your Message" rows="6" required></textarea>
+          <button type="submit" data-i18n="btn_send">Send Message</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- LOGIN -->
+    <section id="login" class="page-section">
+      <div class="section-header">
+        <h2 data-i18n="login_title">Welcome Back</h2>
+        <p data-i18n="login_sub">Login to manage your budget</p>
+      </div>
+
+      <div class="auth-card">
+        <form onsubmit="handleLogin(event)">
+          <input id="loginEmail" type="email" placeholder="Email" required />
+          <input id="loginPassword" type="password" placeholder="Password" required />
+          <label><input id="rememberMe" type="checkbox" /> Remember Me</label>
+          <button type="submit" data-i18n="btn_login">Login</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- REGISTER -->
+    <section id="register" class="page-section">
+      <div class="section-header">
+        <h2 data-i18n="register_title">Create Account</h2>
+        <p data-i18n="register_sub">Start your financial journey today</p>
+      </div>
+
+      <div class="auth-card">
+        <form onsubmit="handleRegister(event)">
+          <input id="registerName" type="text" placeholder="Full Name" required />
+          <input id="registerEmail" type="email" placeholder="Email" required />
+          <input id="registerPassword" type="password" placeholder="Password" required />
+          <input id="confirmPassword" type="password" placeholder="Confirm Password" required />
+          <button type="submit" data-i18n="btn_register">Create Account</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 Budget Manager. All rights reserved.</p>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
 
